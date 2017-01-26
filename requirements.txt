@@ -1,0 +1,28 @@
+I am taking notes - sawatzky
+
+he'll put that later this week;
+
+so yeah
+
+alarm cock requirements
+any platform
+up to you
+one thing that he'll ask is fullscreen
+just a preference tho
+he doesn't care
+not even a little bit
+
+pls not obscure
+
+1. SHOW TIME - display the current time of the day
+2. SET A SINGLE ALARM
+3. DISMISS THE ALARM - turn it off when it rings
+4. CANCEL AN ALARM - after setting but before ringing
+5. SNOOZE - temporarily delay the alarm
+6. MUTIPLE ALARMS - be able to set multiple alarms
+7. DAILY REPEATING ALARMS - set it to repeat ereday
+8. SCHEDULE AN ALARM FOR A DAY OF THE WEEK - every monday and wednesday
+9. ASSIGN RING TONES - Set an audio file for the different alarms
+10. CHOOSE WHETHER YOU WANT DIGITAL OR ANALOG DISPLAY - different ways to display the current time
+11. SETTING SNOOZE TIME PERIOD - "snooze for x minutes"  -should be a global snooze variable
+
