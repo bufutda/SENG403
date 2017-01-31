@@ -1,0 +1,42 @@
+What we need:
+	-User story cards
+		-To be started
+
+	-backlog made of above
+	-task board
+	-burn down chart
+
+
+
+As a student, I need a way to see the time so that I know if I'm on schedule.
+	-Program shows clock, current time.
+	-Doesn't matter between digital/analog.
+As a cashier, I need a way to notify me of the time so I can arrive on time for work.
+	-Notification appears at appointed time.
+	-Sound plays with notification.
+As a librarian, i need a way to turn off an alarm so that I do not disturb people at my workplace.
+	-Ability to dismiss notification
+	-Sound stops on dismissal.
+As a hairdresser, i need a way to cancel notifications so that I can avoid preparing for canceled appointments.
+	-Ability to dismiss notification before appointed time.
+As a heavy sleeper, I need a way to delay an alarm so that I can sleep longer without completely ignoring my schedule.
+	-Way to disable notification while active
+	-disabling sets a one-time notification 10 minutes later
+As a student, I need a way to set multiple alarms so that I can attend all my classes.
+	-Multiple notifications can be set
+	-Not worried about 2 notifications at same time
+As a gardener, i need a way to remind me daily of tasks so that I can properly care for my plants.
+	-Notification can be set to activate daily
+	-Dismissing notification doesn't delete it.
+As a dancer, I need a way to remind me of my weekly lesson so that I am not late.
+	-Notification can be set to activate once a week, on a certain day.
+	-Dismissing notification doesn't delete it.
+As a sound designer, I need my alarms to be a variety of noises so that i do not mistake them for something I am working on.
+	-Notification sound can be changed.
+	-Unknown how many sounds would be sufficient.
+(Something for digital/analog clocks)
+	-Can change between digital and analog.
+	-Notifications work for both.
+(Something for snooze length)
+	-Option to change delay of #5.
+	-Currently global setting.
