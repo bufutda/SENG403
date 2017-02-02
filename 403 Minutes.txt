@@ -1,0 +1,40 @@
+Alarm Clock Requirements:
+- Sawatzky is taking notes
+- Building alarm clock
+- Can use any platform (web, phone, desktpo, tablet, etc.)
+- Not raspberry pi
+- 12 hour time for now
+- FULL SCREEN IDEAL (not req)
+- Reqs in order of importance:
+- 1: Show current time at all times
+- 2: Set a single alarm (audio, maybe flash animations)
+- 3: Dismiss alarm (turn off when it rings)
+- 4: Cancel an alarm (after set, before ring)
+- 5: Snooze (temp delay)
+- 6: Multiple alarms (as many as possible)
+- 7: Daily repeating alarms
+- 8: Schedule an alarm for a day of the week (ex: Tuesdays+Thursdays, just Mondays)
+- 9: Assign different ringtones
+- 10: Choose digital or analog display for current time (not nec for alarms)
+- 11: Set snooze time period (snooze after 10 min, 1 hour, etc.)
+- - - Global setting
+- Have to be present for demo
+- No preference of time zone handling
+- Ruble saved us 15 min in class
+- Should have an easy way to change time/date mid test for demoes
+- As many as possible done, but ~ 3 acceptable for first sprint.
+- Midway through term major change to product happening.
+- Moving to a google doc for notes
+- Attendance still on spreadsheet
+- Android app (android studio)
+- Roles need to be assigned next meeting
+- For next meeting: 
+- - Figure out when our next meeting is (any combo of tutorial meetings and outside meetings adding to 2)
+- - - Majority vote
+- - - Read notes
+- - - Test to make sure git commits work over android studio
+- - - Get gavel Connor pls
+- - Download Android App Studio
+- - Renaming SCRUM to SCUM?
+- First 4 requirements for first sprint
+- Sawatzky gave Ruble git training 01/25/17
