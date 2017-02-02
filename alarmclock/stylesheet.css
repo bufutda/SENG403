@@ -5,8 +5,9 @@
     height: 100%;
     width: 100%;
     background-color: #1a1a1a;
+    font-family: "Rajdhani", sans-serif;
 }
-#settings {
+#settingsButton {
     background-image: url("/alarmclock/assets/gear.png");
     position: absolute;
     right: 50px;
@@ -14,14 +15,55 @@
     width: 30px;
     height: 30px;
     transition: 1s;
+    filter: invert(75%);
 }
-#settings:hover {
+#settingsButton:hover {
     cursor: pointer;
-    filter: sepia(100%);
+    transition: 1s;
+    filter: invert(50%) !important;
+}
+#settings {
+    display: none;
+    z-index: 1;
+    transition: 1s;
+    opacity: 0;
+    height: 400px;
+    position: absolute;
+    top: 80px;
+    right: 80px;
+    background: rgba(96, 96, 96, 0.9);
+    border: 4px solid #1a1a1a;
+}
+.settingSwitchW {
+    display: block;
+    position: relative;
+    margin: 10px;
+}
+.settingSwitchW span {
+    margin-right: 25px;
+}
+.settingSwitchToggle {
+    display: inline-block;
+    height: 20px;
+    width: 100px;
+    text-align: center;
+    border: 2px solid #606060;
+    background: #1a1a1a;
+    color: #606060;
+    font-variant: small-caps;
+    letter-spacing: 4px;
+    user-select: none;
+}
+.settingSwitchToggleActive {
+    border: 2px solid #1a1a1a !important;
+    background: #606060 !important;
+    color: #1a1a1a !important;
+}
+.settingSwitchToggle:hover {
+    cursor: pointer !important;
 }
 #digitalClock {
     display: none;
-    font-family: "Rajdhani", sans-serif;
     color: #606060;
     font-size: 200px;
     width: 600px;

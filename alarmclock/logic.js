@@ -5,7 +5,9 @@
         displayLatch: null,
         secondReachAroundLatch: false,
         minuteReachAroundLatch: false,
-        hourReachAroundLatch: false
+        hourReachAroundLatch: false,
+        settingsVisible: false,
+        settingsLock: false
     };
 
     window.g.cronTimer = {
@@ -86,7 +88,7 @@
     };
 
     window.g.updateBigClock = function (clockTime) {
-        if (window.g.displayMode === "digital") {
+        if (window.g.displayMode) {
             if (window.g.displayMode !== window.g.displayLatch) {
                 document.getElementById("analogClock").style.display = "none";
                 document.getElementById("digitalClock").style.display = "block";
@@ -135,5 +137,42 @@
         } else {
             hand.transform = "rotate(" + deg + "deg)";
         }
+    };
+
+    window.g.settingsClick = function () {
+        if (!window.g.settingsLock) {
+            window.g.settingsLock = true;
+            if (window.g.settingsVisible) {
+                window.g.settingsVisible = false;
+                document.getElementById("settingsButton").style.filter = "invert(75%)";
+                document.getElementById("settings").style.opacity = 0;
+                setTimeout(function () {
+                    document.getElementById("settings").style.display = "none";
+                    window.g.settingsLock = false;
+                }, 1000);
+            } else {
+                window.g.settingsVisible = true;
+                document.getElementById("settingsButton").style.filter = "invert(25%)";
+                document.getElementById("settings").style.display = "block";
+                setTimeout(function () {
+                    setTimeout(function () {
+                        window.g.settingsLock = false;
+                    }, 1000);
+                    document.getElementById("settings").style.opacity = 1;
+                }, 100);
+            }
+        }
+    };
+
+    window.g.changeSetting = function (setting) {
+        var elem = document.getElementById("setting_" + setting);
+        if (elem.classList.contains("settingSwitchToggleActive")) {
+            elem.classList.remove("settingSwitchToggleActive");
+            elem.innerText = elem.getAttribute("inactivetext");
+        } else {
+            elem.classList.add("settingSwitchToggleActive");
+            elem.innerText = elem.getAttribute("activetext");
+        }
+        window.g[setting] = !window.g[setting];
     };
 })();

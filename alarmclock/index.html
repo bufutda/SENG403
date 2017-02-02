@@ -16,10 +16,15 @@
                     }
                 }
 
-                if (window.g.query.hasOwnProperty("displayMode") && (window.g.query.displayMode === "digital" || window.g.query.displayMode === "analog")) {
-                    window.g.displayMode = window.g.query.displayMode;
+                var elems = document.getElementsByClassName("settingSwitchToggle");
+                for (var i = 0; i < elems.length; i++) {
+                    elems[i].innerText = elems[i].getAttribute("activetext");
+                }
+
+                if (window.g.query.hasOwnProperty("displayMode") && (window.g.query.displayMode === "true" || window.g.query.displayMode === "false")) {
+                    window.g.displayMode = window.g.query.displayMode === "true" ? true : false;
                 } else {
-                    window.g.displayMode = "digital";
+                    window.g.displayMode = true;
                 }
                 window.g.cronTimer.start();
             }
@@ -27,7 +32,12 @@
     </head>
     <body onload="javascript:init();">
         <div id="site">
-            <div id="settings"></div>
+            <div id="settingsButton" onclick="javascript:window.g.settingsClick();"></div>
+            <div id="settings">
+                <div class="settingSwitchW">
+                    <span>Display Mode:</span><div class="settingSwitchToggle settingSwitchToggleActive" id="setting_displayMode" activetext="DIGITAL" inactivetext="ANALOG" onclick="javascript:window.g.changeSetting('displayMode');"></div>
+                </div>
+            </div>
             <div id="digitalClock" class="center">00:00:00</div>
             <div id="analogClock" class="center">
                 <div id="analogClock_hourHand" class="clockHand"></div>
