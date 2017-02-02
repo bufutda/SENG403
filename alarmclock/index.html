@@ -4,19 +4,37 @@
         <title>SENG 403 Alarm Clock</title>
         <link rel="stylesheet" type="text/css" href="/alarmclock/stylesheet.css"/>
         <link href="https://fonts.googleapis.com/css?family=Rajdhani" rel="stylesheet">
+        <meta charset="utf-8"/>
         <script type="text/javascript" src="/alarmclock/logic.js"></script>
         <script type="text/javascript">
             function init () {
-                window.g.cronTimer.on("cron", function (cronTime) {
-                    console.log("CRON", cronTime);
-                });
+                var pr = window.location.search.substr(1).split("&");
+                window.g.query = {};
+                for (var i = 0; i < pr.length; i++) {
+                    if (pr[i] !== "") {
+                        window.g.query[pr[i].substr(0, pr[i].indexOf("="))] = pr[i].substr(pr[i].indexOf("=") + 1);
+                    }
+                }
+
+                if (window.g.query.hasOwnProperty("displayMode") && (window.g.query.displayMode === "digital" || window.g.query.displayMode === "analog")) {
+                    window.g.displayMode = window.g.query.displayMode;
+                } else {
+                    window.g.displayMode = "digital";
+                }
                 window.g.cronTimer.start();
             }
         </script>
     </head>
     <body onload="javascript:init();">
         <div id="site">
+            <div id="settings"></div>
             <div id="digitalClock" class="center">00:00:00</div>
+            <div id="analogClock" class="center">
+                <div id="analogClock_hourHand" class="clockHand"></div>
+                <div id="analogClock_minuteHand" class="clockHand"></div>
+                <div id="analogClock_secondHand" class="clockHand"></div>
+                <div id="analogClock_clockFace"></div>
+            </div>
         </div>
     </body>
 </html>

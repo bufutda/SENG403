@@ -1,7 +1,11 @@
 (function () {
     "use strict";
     window.g = {
-        displayMode: "digital"
+        displayMode: null,
+        displayLatch: null,
+        secondReachAroundLatch: false,
+        minuteReachAroundLatch: false,
+        hourReachAroundLatch: false
     };
 
     window.g.cronTimer = {
@@ -12,14 +16,14 @@
         listeners: {},
         start: function () {
             if (isNaN(window.g.cronTimer.tmr)) {
-                window.g.tmr = setInterval(window.g.cronTimer.secondHandler, 1000);
+                window.g.cronTimer.tmr = setInterval(window.g.cronTimer.secondHandler, 100);
             } else {
                 console.warn("CRON already started.");
             }
         },
         stop: function () {
             if (isNaN(window.g.cronTimer.tmr)) {
-                console.wrn("CRON already stopped.");
+                console.warn("CRON already stopped.");
             } else {
                 clearInterval(window.g.cronTimer.tmr);
                 window.g.cronTimer.tmr = NaN;
@@ -27,7 +31,12 @@
         },
         secondHandler: function () {
             var time = new Date();
-            window.g.updateBigClock(time);
+            var clockTime = {
+                s: time.getSeconds(),
+                m: time.getMinutes(),
+                h: time.getHours()
+            };
+            window.g.updateBigClock(clockTime);
             if (time.getUTCSeconds() < 30 && !window.g.cronTimer.secondLatch) {
                 window.g.cronTimer.emit("half");
                 window.g.cronTimer.emit("minute");
@@ -71,24 +80,60 @@
                     window.g.cronTimer.listeners[event][i].apply(window, arg);
                 }
             } else {
-                console.warn("No listeners on emitted event:", event);
+                // console.warn("No listeners on emitted event:", event);
             }
         }
     };
 
-    window.g.updateBigClock = function (time) {
+    window.g.updateBigClock = function (clockTime) {
         if (window.g.displayMode === "digital") {
+            if (window.g.displayMode !== window.g.displayLatch) {
+                document.getElementById("analogClock").style.display = "none";
+                document.getElementById("digitalClock").style.display = "block";
+                window.g.displayLatch = window.g.displayMode;
+            }
             var clock = document.getElementById("digitalClock");
-            var clockTime = {
-                s: time.getSeconds(),
-                m: time.getMinutes(),
-                h: time.getHours()
-            };
             clock.innerHTML = (clockTime.h < 10 ? "0" : "") + clockTime.h + ":" +
                 (clockTime.m < 10 ? "0" : "") + clockTime.m + ":" +
                 (clockTime.s < 10 ? "0" : "") + clockTime.s;
         } else {
-            console.warn("Unimplemented displayMode:", window.g.displayMode);
+            if (window.g.displayMode !== window.g.displayLatch) {
+                document.getElementById("digitalClock").style.display = "none";
+                document.getElementById("analogClock").style.display = "block";
+                window.g.displayLatch = window.g.displayMode;
+            }
+            window.g.rotateHand(document.getElementById("analogClock_hourHand").style, window.g.timeToDeg(clockTime.h), "hourReachAroundLatch");
+            window.g.rotateHand(document.getElementById("analogClock_minuteHand").style, window.g.timeToDeg(clockTime.m), "minuteReachAroundLatch");
+            window.g.rotateHand(document.getElementById("analogClock_secondHand").style, window.g.timeToDeg(clockTime.s), "secondReachAroundLatch");
+        }
+    };
+
+    window.g.timeToDeg = function (numTime) {
+        if (numTime > 60) {
+            console.warn("Invalid time", numTime);
+            return;
+        }
+        return numTime * (360.0 / 60.0);
+    };
+
+    window.g.rotateHand = function (hand, deg, latch) {
+        if (deg === 0) {
+            if (!window.g[latch]) {
+                window.g[latch] = true;
+                hand.transition = "0s";
+                setTimeout(function () {
+                    hand.transform = "rotate(-6deg)";
+                    setTimeout(function () {
+                        hand.transition = "0.5s";
+                        hand.transform = "rotate(0)";
+                        setTimeout(function () {
+                            window.g[latch] = false;
+                        }, 1000);
+                    }, 50);
+                }, 50);
+            }
+        } else {
+            hand.transform = "rotate(" + deg + "deg)";
         }
     };
 })();
