@@ -4,6 +4,7 @@
         <title>SENG 403 Alarm Clock</title>
         <link rel="stylesheet" type="text/css" href="/alarmclock/stylesheet.css"/>
         <link href="https://fonts.googleapis.com/css?family=Rajdhani" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
         <meta charset="utf-8"/>
         <script type="text/javascript" src="/alarmclock/logic.js"></script>
         <script type="text/javascript">
@@ -38,8 +39,12 @@
                     <span>Display Mode:</span><div class="settingSwitchToggle settingSwitchToggleActive" id="setting_displayMode" activetext="DIGITAL" inactivetext="ANALOG" onclick="javascript:window.g.changeSetting('displayMode');"></div>
                 </div>
             </div>
-            <div id="digitalClock" class="center">00:00:00</div>
+            <div id="digitalClockWrapper" class="center">
+                <div id="digitalClockModifier" class="centerX">AM</div>
+                <div id="digitalClock">00:00:00</div>
+            </div>
             <div id="analogClock" class="center">
+                <div id="analogClockModifier" class="center">AM</div>
                 <div id="analogClock_hourHand" class="clockHand"></div>
                 <div id="analogClock_minuteHand" class="clockHand"></div>
                 <div id="analogClock_secondHand" class="clockHand"></div>

@@ -36,7 +36,9 @@
             var clockTime = {
                 s: time.getSeconds(),
                 m: time.getMinutes(),
-                h: time.getHours()
+                h: time.getHours() % 12,
+                t: time.getHours(),
+                n: time.getHours() > 12
             };
             window.g.updateBigClock(clockTime);
             if (time.getUTCSeconds() < 30 && !window.g.cronTimer.secondLatch) {
@@ -91,22 +93,24 @@
         if (window.g.displayMode) {
             if (window.g.displayMode !== window.g.displayLatch) {
                 document.getElementById("analogClock").style.display = "none";
-                document.getElementById("digitalClock").style.display = "block";
+                document.getElementById("digitalClockWrapper").style.display = "block";
                 window.g.displayLatch = window.g.displayMode;
             }
             var clock = document.getElementById("digitalClock");
-            clock.innerHTML = (clockTime.h < 10 ? "0" : "") + clockTime.h + ":" +
+            clock.innerText = (clockTime.h < 10 ? "0" : "") + clockTime.h + ":" +
                 (clockTime.m < 10 ? "0" : "") + clockTime.m + ":" +
                 (clockTime.s < 10 ? "0" : "") + clockTime.s;
+            document.getElementById("digitalClockModifier").innerText = (clockTime.n ? "P" : "A") + "M";
         } else {
             if (window.g.displayMode !== window.g.displayLatch) {
-                document.getElementById("digitalClock").style.display = "none";
+                document.getElementById("digitalClockWrapper").style.display = "none";
                 document.getElementById("analogClock").style.display = "block";
                 window.g.displayLatch = window.g.displayMode;
             }
             window.g.rotateHand(document.getElementById("analogClock_hourHand").style, window.g.timeToDeg(clockTime.h), "hourReachAroundLatch");
             window.g.rotateHand(document.getElementById("analogClock_minuteHand").style, window.g.timeToDeg(clockTime.m), "minuteReachAroundLatch");
             window.g.rotateHand(document.getElementById("analogClock_secondHand").style, window.g.timeToDeg(clockTime.s), "secondReachAroundLatch");
+            document.getElementById("analogClockModifier").innerText = (clockTime.n ? "P" : "A") + "M";
         }
     };
 

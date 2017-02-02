@@ -31,7 +31,7 @@
     position: absolute;
     top: 80px;
     right: 80px;
-    background: rgba(96, 96, 96, 0.9);
+    background: #606060;
     border: 4px solid #1a1a1a;
 }
 .settingSwitchW {
@@ -62,11 +62,26 @@
 .settingSwitchToggle:hover {
     cursor: pointer !important;
 }
-#digitalClock {
+#digitalClockWrapper {
     display: none;
     color: #606060;
     font-size: 200px;
-    width: 600px;
+    font-family: "Inconsolata", monospace;
+}
+#digitalClock {
+    width: 100%;
+}
+#digitalClockModifier {
+    text-align: center;
+    position: absolute;
+    z-index: 1;
+    font-size: 35px;
+}
+#analogClockModifier {
+    z-index: 2;
+    font-size: 17px;
+    font-family: "Inconsolata", monospace;
+    color: #606060;
 }
 #analogClock {
     display: none;
