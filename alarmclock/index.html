@@ -2,8 +2,21 @@
 <html>
     <head>
         <title>SENG 403 Alarm Clock</title>
+        <link rel="stylesheet" type="text/css" href="/alarmclock/stylesheet.css"/>
+        <link href="https://fonts.googleapis.com/css?family=Rajdhani" rel="stylesheet">
+        <script type="text/javascript" src="/alarmclock/logic.js"></script>
+        <script type="text/javascript">
+            function init () {
+                window.g.cronTimer.on("cron", function (cronTime) {
+                    console.log("CRON", cronTime);
+                });
+                window.g.cronTimer.start();
+            }
+        </script>
     </head>
-    <body>
-        What time is it?
+    <body onload="javascript:init();">
+        <div id="site">
+            <div id="digitalClock" class="center">00:00:00</div>
+        </div>
     </body>
 </html>
