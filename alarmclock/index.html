@@ -6,7 +6,9 @@
         <link href="https://fonts.googleapis.com/css?family=Rajdhani" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
         <meta charset="utf-8"/>
+        <script src="/alarmclock/resources/chrono.min.js"></script>
         <script type="text/javascript" src="/alarmclock/logic.js"></script>
+        <script type="text/javascript" src="/alarmclock/alarm.js"></script>
         <script type="text/javascript">
             function init () {
                 var pr = window.location.search.substr(1).split("&");
@@ -27,6 +29,13 @@
                 } else {
                     window.g.displayMode = true;
                 }
+
+                document.getElementById("textInput_time").addEventListener("keydown", function (e) {
+                    if (e.keyCode === 13) {
+                        window.g.processTimeText();
+                    }
+                });
+
                 window.g.cronTimer.start();
             }
         </script>
@@ -47,7 +56,7 @@
                                     <div class="interruptedHRdiv"><hr></div>
                                 </div>
                                 <div id="timeSelectW" class="centerX">
-                                    <div class="nice-select">
+                                    <div id="timeSelect_hour" class="nice-select">
                                         <select>
                                             <option value="0">00</option>
                                             <option value="1">01</option>
@@ -65,7 +74,7 @@
                                         </select>
                                     </div>
                                     :
-                                    <div class="nice-select">
+                                    <div id="timeSelect_minute" class="nice-select">
                                         <select>
                                             <option value="0">00</option>
                                             <option value="1">01</option>
@@ -130,7 +139,7 @@
                                         </select>
                                     </div>
                                     :
-                                    <div class="nice-select">
+                                    <div id="timeSelect_second" class="nice-select">
                                         <select>
                                             <option value="0">00</option>
                                             <option value="1">01</option>
@@ -194,7 +203,7 @@
                                             <option value="59">59</option>
                                         </select>
                                     </div>
-                                    <div class="nice-select">
+                                    <div id="timeSelect_modifier" class="nice-select">
                                         <select>
                                             <option value="am">AM</option>
                                             <option value="pm">PM</option>
@@ -205,66 +214,80 @@
                         </div>
                         <div>
                             <div class="createAlarmDialogW center">
-                                <div class="centerX">
-                                    <label for="checkInput_repeat"></label>
-                                    <label class="checkboxInput">
-                                        <input id="checkInput_repeat" type="checkbox" name="checkInput_repeat" onclick="javascript:window.g.repeatCheck();"/>
-                                        <span></span>
-                                    </label>
-                                    Repeat
-                                </div>
-                                <hr>
-                                <div class="centerX">
-                                    <div id="repeatShadow" class="overshadow"></div>
-                                    <div id="repeatSelectW">
-                                        <label for="checkInput_sunday"></label>
-                                        <label class="checkboxInput">
-                                            <input id="checkInput_sunday" type="checkbox" name="checkInput_sunday"/>
-                                            <span></span>
-                                        </label>
-                                        Su&nbsp;
+                                <div class="center">
+                                    <div>
+                                        <div id="audioW">
+                                            Audio:
+                                            <div id="musicSelect" class="nice-select">
+                                                <select>
+                                                    <option value="/alarmclock/tones/alert.ogg">Alert</option>
+                                                    <option value="/alarmclock/tones/harp.ogg">Harp</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div id="repeatW">
+                                            <label for="checkInput_repeat"></label>
+                                            <label class="checkboxInput">
+                                                <input id="checkInput_repeat" type="checkbox" name="checkInput_repeat" onclick="javascript:window.g.repeatCheck();"/>
+                                                <span></span>
+                                            </label>
+                                            Repeat
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div id="repeatShadowSelectW">
+                                        <div id="repeatShadow" class="overshadow"></div>
+                                        <div id="repeatSelectW">
+                                            <label for="checkInput_sunday"></label>
+                                            <label class="checkboxInput">
+                                                <input id="checkInput_sunday" type="checkbox" name="checkInput_sunday"/>
+                                                <span></span>
+                                            </label>
+                                            Su&nbsp;
 
-                                        <label for="checkInput_monday"></label>
-                                        <label class="checkboxInput">
-                                            <input id="checkInput_monday" type="checkbox" name="checkInput_monday"/>
-                                            <span></span>
-                                        </label>
-                                        M&nbsp;
+                                            <label for="checkInput_monday"></label>
+                                            <label class="checkboxInput">
+                                                <input id="checkInput_monday" type="checkbox" name="checkInput_monday"/>
+                                                <span></span>
+                                            </label>
+                                            M&nbsp;
 
-                                        <label for="checkInput_tuesday"></label>
-                                        <label class="checkboxInput">
-                                            <input id="checkInput_tuesday" type="checkbox" name="checkInput_tuesday"/>
-                                            <span></span>
-                                        </label>
-                                        Tu&nbsp;
+                                            <label for="checkInput_tuesday"></label>
+                                            <label class="checkboxInput">
+                                                <input id="checkInput_tuesday" type="checkbox" name="checkInput_tuesday"/>
+                                                <span></span>
+                                            </label>
+                                            Tu&nbsp;
 
-                                        <label for="checkInput_wednesday"></label>
-                                        <label class="checkboxInput">
-                                            <input id="checkInput_wednesday" type="checkbox" name="checkInput_wednesday"/>
-                                            <span></span>
-                                        </label>
-                                        W&nbsp;
+                                            <label for="checkInput_wednesday"></label>
+                                            <label class="checkboxInput">
+                                                <input id="checkInput_wednesday" type="checkbox" name="checkInput_wednesday"/>
+                                                <span></span>
+                                            </label>
+                                            W&nbsp;
 
-                                        <label for="checkInput_thursday"></label>
-                                        <label class="checkboxInput">
-                                            <input id="checkInput_thursday" type="checkbox" name="checkInput_thursday"/>
-                                            <span></span>
-                                        </label>
-                                        Th&nbsp;
+                                            <label for="checkInput_thursday"></label>
+                                            <label class="checkboxInput">
+                                                <input id="checkInput_thursday" type="checkbox" name="checkInput_thursday"/>
+                                                <span></span>
+                                            </label>
+                                            Th&nbsp;
 
-                                        <label for="checkInput_friday"></label>
-                                        <label class="checkboxInput">
-                                            <input id="checkInput_friday" type="checkbox" name="checkInput_friday"/>
-                                            <span></span>
-                                        </label>
-                                        F&nbsp;
+                                            <label for="checkInput_friday"></label>
+                                            <label class="checkboxInput">
+                                                <input id="checkInput_friday" type="checkbox" name="checkInput_friday"/>
+                                                <span></span>
+                                            </label>
+                                            F&nbsp;
 
-                                        <label for="checkInput_saturday"></label>
-                                        <label class="checkboxInput">
-                                            <input id="checkInput_saturday" type="checkbox" name="checkInput_saturday"/>
-                                            <span></span>
-                                        </label>
-                                        S
+                                            <label for="checkInput_saturday"></label>
+                                            <label class="checkboxInput">
+                                                <input id="checkInput_saturday" type="checkbox" name="checkInput_saturday"/>
+                                                <span></span>
+                                            </label>
+                                            Sa
+                                        </div>
                                     </div>
                                 </div>
                             </div>

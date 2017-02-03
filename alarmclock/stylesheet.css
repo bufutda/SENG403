@@ -317,5 +317,36 @@ hr {
     display: block;
 }
 #repeatSelectW {
-    width: 392px;
+    width: 405px;;
+}
+#repeatShadowSelectW {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+#musicSelect {
+    width: 150px;
+}
+#audioW {
+    font-variant: super;
+    text-align: center;
+}
+#repeatW {
+    text-align: center;
+}
+.alarmListElement {
+    height: 100px;
+    border-bottom: 2px solid #606060;
+    box-sizing: border-box;
+    position: relative;
+    padding: 20px;
+    color: #606060;
+    background-color: #1a1a1a;
+}
+.alarmListElement:hover {
+    color: #1a1a1a;
+    background-color: #606060;
+}
+.alarmListElementTime {
+    font-size: 35px;
 }

@@ -1,17 +1,19 @@
 (function () {
     "use strict";
-    window.g = {
-        displayMode: null,
-        displayLatch: null,
-        secondReachAroundLatch: false,
-        minuteReachAroundLatch: false,
-        hourReachAroundLatch: false,
-        settingsVisible: false,
-        settingsLock: false,
-        createAlarmLock: false,
-        dialogLock: false,
-        dialogProgressLock: false
-    };
+    if (!window.hasOwnProperty("g")) {
+        window.g = {};
+    }
+    window.g.displayMode = null;
+    window.g.displayLatch = null;
+    window.g.secondReachAroundLatch = false;
+    window.g.minuteReachAroundLatch = false;
+    window.g.hourReachAroundLatch = false;
+    window.g.settingsVisible = false;
+    window.g.settingsLock = false;
+    window.g.createAlarmLock = false;
+    window.g.dialogLock = false;
+    window.g.dialogProgressLock = false;
+    window.g.alarms = [];
 
     window.g.cronTimer = {
         tmr: NaN,
@@ -190,7 +192,6 @@
                 document.getElementById("newAlarm").innerHTML = "Cancel &ominus;";
                 document.getElementById("newAlarm").style.filter = "sepia(100%)";
                 window.g.showDialog("createAlarmDialog", function () {
-                    window.g.createAlarmLock = false;
                 });
                 document.getElementById("createButton").style.display = "block";
                 setTimeout(function () {
@@ -200,6 +201,7 @@
                 document.getElementById("newAlarm").innerHTML = "Create Alarm &oplus;";
                 document.getElementById("newAlarm").style.filter = "";
                 document.getElementById("createButton").style.opacity = 0;
+                window.g.clearCreateDialog();
                 window.g.hideDialog("createAlarmDialog", function () {
                     document.getElementById("createButton").style.display = "none";
                     window.g.createAlarmLock = false;
@@ -255,5 +257,60 @@
             document.getElementById("checkInput_friday").checked = false;
             document.getElementById("checkInput_saturday").checked = false;
         }
+    };
+
+    window.g.processTimeText = function () {
+        var date = window.chrono.parseDate(document.getElementById("textInput_time").value);
+        if (date === null) {
+            var elem = document.querySelector("#createAlarmDialog > div:first-child");
+            elem.style["background-color"] = "#945353";
+            setTimeout(function () {
+                elem.style.transition = "1s";
+                elem.style["background-color"] = "#606060";
+                setTimeout(function () {
+                    elem.style.transition = "0s";
+                }, 1000);
+            }, 100);
+        } else {
+            document.querySelector("#timeSelect_hour select").value = (date.getHours() > 12 ? date.getHours() - 12 : date.getHours()).toString();
+            document.querySelector("#timeSelect_minute select").value = date.getMinutes().toString();
+            document.querySelector("#timeSelect_second select").value = date.getSeconds().toString();
+            document.querySelector("#timeSelect_modifier select").value = date.getHours() >= 12 ? "pm" : "am";
+        }
+    };
+
+    window.g.clearCreateDialog = function () {
+        document.getElementById("checkInput_repeat").checked = false;
+        window.g.repeatCheck();
+        document.querySelector("#timeSelect_hour select").value = "0";
+        document.querySelector("#timeSelect_minute select").value = "0";
+        document.querySelector("#timeSelect_second select").value = "0";
+        document.querySelector("#timeSelect_modifier select").value = "am";
+        document.querySelector("#musicSelect select").value = "/alarmclock/tones/alert.ogg";
+        document.getElementById("textInput_time").value = "";
+    };
+
+    window.g.confirmCreateAlarm = function () {
+        var alarmElem = document.createElement("div");
+        alarmElem.classList.add("alarmListElement");
+        document.getElementById("alarmList").appendChild(alarmElem);
+        window.g.alarms.push(new window.g.Alarm({
+            h: parseInt(document.querySelector("#timeSelect_hour select").value, 10),
+            m: parseInt(document.querySelector("#timeSelect_minute select").value, 10),
+            s: parseInt(document.querySelector("#timeSelect_second select").value, 10),
+            n: document.querySelector("#timeSelect_modifier select").value === "am"
+        }, {
+            enable: document.getElementById("checkInput_repeat").checked,
+            days: {
+                sun: document.getElementById("checkInput_sunday").checked,
+                mon: document.getElementById("checkInput_monday").checked,
+                tue: document.getElementById("checkInput_tuesday").checked,
+                wed: document.getElementById("checkInput_wednesday").checked,
+                thu: document.getElementById("checkInput_thursday").checked,
+                fri: document.getElementById("checkInput_friday").checked,
+                sat: document.getElementById("checkInput_saturday").checked
+            }
+        }, document.querySelector("#musicSelect select").value, alarmElem));
+        window.g.createAlarm();
     };
 })();
