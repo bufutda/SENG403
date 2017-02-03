@@ -16,6 +16,7 @@
     window.g.alarms = [];
     window.g.goingOff = false;
     window.g.alarmRingCount = 0;
+    window.g.snoozeAmount = 30000;
 
     window.g.cronTimer = {
         tmr: NaN,

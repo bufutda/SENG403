@@ -53,7 +53,7 @@
                 if ((clockTime.h === self.alarmTime.h) && (clockTime.m === self.alarmTime.m)) {
                     window.g.cronTimer.off("minute", listener);
                     if (self.alarmTime.s === 0) {
-                        self.ring();
+                        self.ring("It is now " + self.timeStr());
                         if (self.doRepeat) {
                             self.setTimer();
                         }
@@ -61,7 +61,7 @@
                         window.g.cronTimer.on("tick", function tickListener (clockTime) {
                             if (clockTime.s >= self.alarmTime.s) {
                                 window.g.cronTimer.off("tick", tickListener);
-                                self.ring();
+                                self.ring("It is now " + self.timeStr());
                                 if (self.doRepeat) {
                                     self.setTimer();
                                 }
@@ -72,17 +72,18 @@
             });
         };
 
-        self.ring = function () {
-            window.g.displayAlarm("It is now " + self.timeStr(), function () {
+        self.ring = function (msg) {
+            window.g.displayAlarm(msg, function () {
                 // dismiss
                 if (!self.doRepeat) {
                     self.deleteHandler();
                 }
             }, function () {
                 // snooze
-                if (!self.doRepeat) {
-                    self.deleteHandler();
-                }
+                setTimeout(function () {
+                    console.log("snooze over");
+                    self.ring("SNOOZE for alarm: " + self.timeStr());
+                }, window.g.snoozeAmount);
             });
         };
 
