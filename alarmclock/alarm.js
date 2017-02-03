@@ -48,6 +48,44 @@
             delete this;
         };
 
+        self.setTimer = function () {
+            window.g.cronTimer.on("minute", function listener (clockTime) {
+                if ((clockTime.h === self.alarmTime.h) && (clockTime.m === self.alarmTime.m)) {
+                    window.g.cronTimer.off("minute", listener);
+                    if (self.alarmTime.s === 0) {
+                        self.ring();
+                        if (self.doRepeat) {
+                            self.setTimer();
+                        }
+                    } else {
+                        window.g.cronTimer.on("tick", function tickListener (clockTime) {
+                            if (clockTime.s >= self.alarmTime.s) {
+                                window.g.cronTimer.off("tick", tickListener);
+                                self.ring();
+                                if (self.doRepeat) {
+                                    self.setTimer();
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+        };
+
+        self.ring = function () {
+            window.g.displayAlarm("It is now " + self.timeStr(), function () {
+                // dismiss
+                if (!self.doRepeat) {
+                    self.deleteHandler();
+                }
+            }, function () {
+                // snooze
+                if (!self.doRepeat) {
+                    self.deleteHandler();
+                }
+            });
+        };
+
         var timeDisplay = document.createElement("div");
         timeDisplay.classList.add("alarmListElementTime");
         timeDisplay.classList.add("centerY");
@@ -64,5 +102,7 @@
             }
         });
         self.elem.appendChild(cancelButton);
+
+        self.setTimer();
     };
 })();

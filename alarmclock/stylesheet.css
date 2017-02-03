@@ -367,3 +367,52 @@ hr {
 .alarmListElementCancel:hover {
     filter: grayscale(0);
 }
+#alarmShadow {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: black;
+    opacity: 0.6;
+    cursor: not-allowed;
+    z-index: 200;
+    display: none;
+}
+#alarmBox {
+    z-index: 201;
+    width: 400px;
+    height: 60%;
+    border: 4px solid #1a1a1a;
+    background: #606060;
+    overflow: scroll;
+    display: none;
+}
+.alarmBoxElement {
+    position: relative;
+    box-sizing: border-box;
+    border-bottom: 2px solid #1a1a1a;
+    height: 100px;
+}
+.alarmBoxButton {
+    right: 10px;
+    position: absolute;
+    font-variant: small-caps;
+    color: #1a1a1a;
+    background: #606060;
+    border: 2px solid #1a1a1a;
+    width: 100px;
+    text-align:center;
+    letter-spacing: 2px;
+}
+.alarmBoxButton:hover {
+    color: #606060;
+    background: #1a1a1a;
+    cursor: pointer;
+}
+.alarmBoxSnooze {
+    bottom: 10px;
+}
+.alarmBoxDismiss {
+    top: 10px;
+}
+.alarmBoxMsg {
+    left: 10px;
+}

@@ -14,6 +14,8 @@
     window.g.dialogLock = false;
     window.g.dialogProgressLock = false;
     window.g.alarms = [];
+    window.g.goingOff = false;
+    window.g.alarmRingCount = 0;
 
     window.g.cronTimer = {
         tmr: NaN,
@@ -37,7 +39,7 @@
             }
         },
         secondHandler: function () {
-            var time = new Date();
+            var time = window.g.cronTimer.getTime();
             var clockTime = {
                 s: time.getSeconds(),
                 m: time.getMinutes(),
@@ -45,32 +47,27 @@
                 t: time.getHours(),
                 n: time.getHours() > 12
             };
+            window.g.cronTimer.emit("tick", clockTime);
             window.g.updateBigClock(clockTime);
             if (time.getUTCSeconds() < 30 && !window.g.cronTimer.secondLatch) {
                 window.g.cronTimer.emit("half");
-                window.g.cronTimer.emit("minute");
-                window.g.cronTimer.emit("cron", 0.5);
-                window.g.cronTimer.emit("cron", 1);
+                window.g.cronTimer.emit("minute", clockTime);
                 window.g.cronTimer.secondLatch = true;
             }
             if (time.getUTCSeconds() >= 30 && window.g.cronTimer.secondLatch) {
                 window.g.cronTimer.emit("half");
-                window.g.cronTimer.emit("cron", 0.5);
                 window.g.cronTimer.secondLatch = false;
             }
             if (time.getUTCMinutes() !== window.g.cronTimer.minuteLatch) {
                 window.g.cronTimer.minuteLatch = time.getUTCMinutes();
                 if (window.g.cronTimer.minuteLatch % 10 === 0) {
-                    window.g.cronTimer.emit("ten");
-                    window.g.cronTimer.emit("cron", 10);
+                    window.g.cronTimer.emit("ten", clockTime);
                 }
                 if (window.g.cronTimer.minuteLatch % 30 === 0) {
-                    window.g.cronTimer.emit("thirty");
-                    window.g.cronTimer.emit("cron", 30);
+                    window.g.cronTimer.emit("thirty", clockTime);
                 }
                 if (window.g.cronTimer.minuteLatch === 0) {
-                    window.g.cronTimer.emit("hour");
-                    window.g.cronTimer.emit("cron", 60);
+                    window.g.cronTimer.emit("hour", clockTime);
                 }
             }
         },
@@ -79,6 +76,26 @@
                 window.g.cronTimer.listeners[event] = [];
             }
             window.g.cronTimer.listeners[event].push(handler);
+            var time = window.g.cronTimer.getTime();
+            window.g.cronTimer.emit(event, {
+                s: time.getSeconds(),
+                m: time.getMinutes(),
+                h: time.getHours() % 12,
+                t: time.getHours(),
+                n: time.getHours() > 12
+            });
+        },
+        off: function (event, handler) {
+            if (window.g.cronTimer.listeners.hasOwnProperty(event)) {
+                var i = window.g.cronTimer.listeners[event].indexOf(handler);
+                if (i > -1) {
+                    window.g.cronTimer.listeners[event].splice(i, 1);
+                } else {
+                    console.warn("Cannot remove listener. Handler is not registered.", handler);
+                }
+            } else {
+                console.warn("Cannot remove listener for non-existant event:", event);
+            }
         },
         emit: function (event, arg) {
             if (!(arg instanceof Array)) {
@@ -91,6 +108,9 @@
             } else {
                 // console.warn("No listeners on emitted event:", event);
             }
+        },
+        getTime: function () {
+            return new Date();
         }
     };
 
@@ -298,7 +318,7 @@
             h: parseInt(document.querySelector("#timeSelect_hour select").value, 10),
             m: parseInt(document.querySelector("#timeSelect_minute select").value, 10),
             s: parseInt(document.querySelector("#timeSelect_second select").value, 10),
-            n: document.querySelector("#timeSelect_modifier select").value === "am"
+            n: document.querySelector("#timeSelect_modifier select").value === "pm"
         }, {
             enable: document.getElementById("checkInput_repeat").checked,
             days: {
@@ -312,5 +332,64 @@
             }
         }, document.querySelector("#musicSelect select").value, alarmElem, window.g.alarms.length));
         window.g.createAlarm();
+    };
+
+    window.g.displayAlarm = function (msg, dismiss, snooze) {
+        window.g.alarmRingCount++;
+        if (!window.g.goingOff) {
+            window.g.goingOff = true;
+            document.getElementById("alarmShadow").style.display = "block";
+            document.getElementById("alarmBox").style.display = "block";
+        }
+
+        var alarmBoxElement = document.createElement("div");
+        alarmBoxElement.classList.add("alarmBoxElement");
+
+        var alarmBoxDismiss = document.createElement("div");
+        alarmBoxDismiss.classList.add("alarmBoxButton");
+        alarmBoxDismiss.classList.add("alarmBoxDismiss");
+        alarmBoxDismiss.innerText = "DISMISS";
+        alarmBoxDismiss.addEventListener("click", dismissListener);
+        alarmBoxElement.appendChild(alarmBoxDismiss);
+
+        var alarmBoxSnooze = document.createElement("div");
+        alarmBoxSnooze.classList.add("alarmBoxButton");
+        alarmBoxSnooze.classList.add("alarmBoxSnooze");
+        alarmBoxSnooze.innerText = "SNOOZE";
+        alarmBoxSnooze.addEventListener("click", snoozeListener);
+        alarmBoxElement.appendChild(alarmBoxSnooze);
+
+        var alarmBoxMsg = document.createElement("div");
+        alarmBoxMsg.classList.add("alarmBoxMsg");
+        alarmBoxMsg.classList.add("centerY");
+        alarmBoxMsg.innerText = msg;
+        alarmBoxElement.appendChild(alarmBoxMsg);
+
+        document.getElementById("alarmBox").appendChild(alarmBoxElement);
+
+        function dismissListener () {
+            alarmBoxDismiss.removeEventListener("click", dismissListener);
+            alarmBoxSnooze.removeEventListener("click", snoozeListener);
+            alarmBoxElement.remove();
+            window.g.alarmRingCount--;
+            if (window.g.alarmRingCount === 0) {
+                document.getElementById("alarmShadow").style.display = "none";
+                document.getElementById("alarmBox").style.display = "none";
+                window.g.goingOff = false;
+            }
+            dismiss();
+        }
+        function snoozeListener () {
+            alarmBoxDismiss.removeEventListener("click", dismissListener);
+            alarmBoxSnooze.removeEventListener("click", snoozeListener);
+            alarmBoxElement.remove();
+            window.g.alarmRingCount--;
+            if (window.g.alarmRingCount === 0) {
+                document.getElementById("alarmShadow").style.display = "none";
+                document.getElementById("alarmBox").style.display = "none";
+                window.g.goingOff = false;
+            }
+            snooze();
+        }
     };
 })();
