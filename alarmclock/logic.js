@@ -189,7 +189,7 @@
         if (!window.g.dialogProgressLock) {
             if (!window.g.createAlarmLock) {
                 window.g.createAlarmLock = true;
-                document.getElementById("newAlarm").innerHTML = "Cancel &ominus;";
+                document.getElementById("newAlarm").innerHTML = "Cancel &otimes;";
                 document.getElementById("newAlarm").style.filter = "sepia(100%)";
                 window.g.showDialog("createAlarmDialog", function () {
                 });
@@ -310,7 +310,7 @@
                 fri: document.getElementById("checkInput_friday").checked,
                 sat: document.getElementById("checkInput_saturday").checked
             }
-        }, document.querySelector("#musicSelect select").value, alarmElem));
+        }, document.querySelector("#musicSelect select").value, alarmElem, window.g.alarms.length));
         window.g.createAlarm();
     };
 })();

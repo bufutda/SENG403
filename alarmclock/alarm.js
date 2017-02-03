@@ -3,9 +3,10 @@
     if (!window.hasOwnProperty("g")) {
         window.g = {};
     }
-    window.g.Alarm = function (clockTime, repeat, audio, elem) {
+    window.g.Alarm = function (clockTime, repeat, audio, elem, index) {
         var self = this;
         self.elem = elem;
+        self.index = index;
         self.alarmTime = {
             h: clockTime.h + (clockTime.n ? 12 : 0),
             m: clockTime.m,
@@ -41,10 +42,27 @@
                 (self.alarmTime.s < 10 ? "0" : "") + self.alarmTime.s;
         };
 
+        self.deleteHandler = function () {
+            self.elem.remove();
+            window.g.alarms.splice(self.index, 1);
+            delete this;
+        };
+
         var timeDisplay = document.createElement("div");
         timeDisplay.classList.add("alarmListElementTime");
         timeDisplay.classList.add("centerY");
         timeDisplay.innerText = self.timeStr() + " " + self.repeatStr();
         self.elem.appendChild(timeDisplay);
+
+        var cancelButton = document.createElement("div");
+        cancelButton.classList.add("alarmListElementCancel");
+        cancelButton.classList.add("centerY");
+        cancelButton.innerHTML = "&otimes;";
+        cancelButton.addEventListener("click", function () {
+            if (confirm("Are you sure you want to delete this Alarm?")) {
+                self.deleteHandler();
+            }
+        });
+        self.elem.appendChild(cancelButton);
     };
 })();
