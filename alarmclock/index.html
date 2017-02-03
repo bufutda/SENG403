@@ -33,22 +33,28 @@
     </head>
     <body onload="javascript:init();">
         <div id="site">
-            <div id="settingsButton" onclick="javascript:window.g.settingsClick();"></div>
-            <div id="settings">
-                <div class="settingSwitchW">
-                    <span>Display Mode:</span><div class="settingSwitchToggle settingSwitchToggleActive" id="setting_displayMode" activetext="DIGITAL" inactivetext="ANALOG" onclick="javascript:window.g.changeSetting('displayMode');"></div>
+            <div id="alarmSide">
+                <div id="alarmHeader"><div id="newAlarm" class="centerY">&oplus;</div></div>
+                <div id="alarmList"></div>
+            </div>
+            <div id="clockSide">
+                <div id="settingsButton" onclick="javascript:window.g.settingsClick();"></div>
+                <div id="settings">
+                    <div class="settingSwitchW">
+                        <span>Display Mode:</span><div class="settingSwitchToggle settingSwitchToggleActive" id="setting_displayMode" activetext="DIGITAL" inactivetext="ANALOG" onclick="javascript:window.g.changeSetting('displayMode');"></div>
+                    </div>
                 </div>
-            </div>
-            <div id="digitalClockWrapper" class="center">
-                <div id="digitalClockModifier" class="centerX">AM</div>
-                <div id="digitalClock">00:00:00</div>
-            </div>
-            <div id="analogClock" class="center">
-                <div id="analogClockModifier" class="center">AM</div>
-                <div id="analogClock_hourHand" class="clockHand"></div>
-                <div id="analogClock_minuteHand" class="clockHand"></div>
-                <div id="analogClock_secondHand" class="clockHand"></div>
-                <div id="analogClock_clockFace"></div>
+                <div id="digitalClockWrapper" class="center">
+                    <div id="digitalClockModifier" class="centerX">AM</div>
+                    <div id="digitalClock">00:00:00</div>
+                </div>
+                <div id="analogClock" class="center">
+                    <div id="analogClockModifier" class="center">AM</div>
+                    <div id="analogClock_hourHand" class="clockHand"></div>
+                    <div id="analogClock_minuteHand" class="clockHand"></div>
+                    <div id="analogClock_secondHand" class="clockHand"></div>
+                    <div id="analogClock_clockFace"></div>
+                </div>
             </div>
         </div>
     </body>

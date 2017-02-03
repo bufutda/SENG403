@@ -6,6 +6,28 @@
     width: 100%;
     background-color: #1a1a1a;
     font-family: "Rajdhani", sans-serif;
+    min-width: 1312px;
+}
+#clockSide {
+    position: absolute;
+    top: 0; bottom: 0; right: 0;
+    margin-right: 0;
+    float: right;
+    width: 50%;
+    height: 100%;
+    border-left: 4px solid #606060;
+    z-index: 1;
+}
+#alarmSide {
+    position: absolute;
+    top: 0; bottom: 0; left: 0;
+    margin-left: 0;
+    float: left;
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+    min-width: 200px;
+    z-index: 0;
 }
 #settingsButton {
     background-image: url("/alarmclock/assets/gear.png");
@@ -24,7 +46,7 @@
 }
 #settings {
     display: none;
-    z-index: 1;
+    z-index: 2;
     transition: 1s;
     opacity: 0;
     height: 400px;
@@ -65,7 +87,7 @@
 #digitalClockWrapper {
     display: none;
     color: #606060;
-    font-size: 200px;
+    font-size: 162px;
     font-family: "Inconsolata", monospace;
 }
 #digitalClock {
@@ -74,11 +96,11 @@
 #digitalClockModifier {
     text-align: center;
     position: absolute;
-    z-index: 1;
+    z-index: 2;
     font-size: 35px;
 }
 #analogClockModifier {
-    z-index: 2;
+    z-index: 3;
     font-size: 17px;
     font-family: "Inconsolata", monospace;
     color: #606060;
@@ -106,7 +128,7 @@
 .clockHand {
     height: 420px;
     width: 35px;
-    z-index: 1;
+    z-index: 2;
     margin-left: 192.5px;
     position: absolute;
     transition: 0.5s;
@@ -125,4 +147,29 @@
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
+}
+#alarmHeader {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 75px;
+    border-bottom: 4px solid #606060;
+    width: 100%;
+}
+#newAlarm {
+    position: absolute;
+    right: 0;
+    padding-right: 20px;
+    font-size: 59px;
+    color: #606060;
+    transition: 0.5s;
+}
+#newAlarm:hover {
+    cursor: pointer;
+    filter: sepia(100%);
+}
+#alarmList {
+    position: absolute;
+    top: 75px; left: 0; right: 0; bottom: 0;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
