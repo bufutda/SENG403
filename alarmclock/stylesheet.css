@@ -154,6 +154,7 @@
     height: 75px;
     border-bottom: 4px solid #606060;
     width: 100%;
+    box-sizing: border-box;
 }
 #newAlarm {
     position: absolute;
@@ -161,15 +162,160 @@
     padding-right: 20px;
     font-size: 59px;
     color: #606060;
-    transition: 0.5s;
+    transition: 1s;
 }
 #newAlarm:hover {
     cursor: pointer;
     filter: sepia(100%);
+}
+#createButton {
+    position: absolute;
+    left: 0;
+    padding-left: 20px;
+    font-size: 59px;
+    color: #388639;
+    filter: grayscale(100%);
+    transition: 1s;
+    opacity: 0;
+    display: none;
+}
+#createButton:hover {
+    cursor: pointer;
+    filter: grayscale(0);
 }
 #alarmList {
     position: absolute;
     top: 75px; left: 0; right: 0; bottom: 0;
     overflow-y: scroll;
     overflow-x: hidden;
+}
+.dialog {
+    display: none;
+    z-index: 4;
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    top: 20px;
+    bottom: 20px;
+    background: #606060;
+    opacity: 0;
+    transition: 1s;
+    cursor: auto;
+    font-size: 24px;
+}
+#dialogWrapper {
+    display: none;
+    position: absolute;
+    top: 75px; left: 0; right: 0; bottom: 0;
+    cursor: not-allowed;
+}
+.interruptedHR {
+    display: block;
+    text-align: center;
+    letter-spacing: 4px;
+}
+hr {
+    border-color: #1a1a1a;
+    border-style: solid;
+    width: 95%;
+
+}
+.interruptedHR div {
+    display: inline-block;
+    width: 10%;
+    font-variant: small-caps;
+}
+.interruptedHRdiv {
+    width: 40% !important;
+}
+.textInput {
+    border: 2px solid #1a1a1a;
+    height: 15px;
+    width: 90%;
+    background: #606060;
+    padding: 9px;
+}
+.textInput:focus {
+    background: #1a1a1a;
+    color: #606060;
+}
+#createAlarmDialog > div:first-child {
+    top: 0;
+}
+#createAlarmDialog > div:last-child {
+    bottom: 0;
+}
+#createAlarmDialog > div {
+    padding: 10px;
+    height: 45%;
+    position: absolute;
+    left: 0; right: 0;
+    background: #606060;
+    pointer-events: all;
+    border: 4px solid #1a1a1a;
+}
+#createAlarmDialog {
+    background: transparent;
+    pointer-events: none;
+}
+#createHR1 {
+    margin-top: 50px;
+}
+.nice-select {
+   background: url(/alarmclock/assets/dropdown.png) no-repeat 96% 0;
+   background-color: #606060;
+   border: 2px solid #1a1a1a;
+   height: 29px;
+   overflow: hidden;
+   width: 75px;
+   display: inline-block;
+   margin: 2px;
+}
+
+.nice-select select {
+   background: transparent;
+   border: none;
+   font-size: 14px;
+   height: 29px;
+   padding: 5px;
+   width: 268px;
+   color: #1a1a1a;
+}
+
+#timeSelectW {
+    font-variant: super;
+    width: 367px;
+}
+.createAlarmDialogW {
+    width: 100%;
+}
+.createAlarmDialogW > hr {
+    margin-top: 40px;
+}
+.checkboxInput input {
+    display: none;
+}
+.checkboxInput span {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    cursor: pointer;
+    background: url("/alarmclock/assets/unchecked.png");
+}
+.checkboxInput input:checked + span {
+    background: url("/alarmclock/assets/checked.png");
+}
+.overshadow {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 100;
+    background-color: #606060;
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+#repeatShadow {
+    display: block;
+}
+#repeatSelectW {
+    width: 392px;
 }

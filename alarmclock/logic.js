@@ -7,7 +7,10 @@
         minuteReachAroundLatch: false,
         hourReachAroundLatch: false,
         settingsVisible: false,
-        settingsLock: false
+        settingsLock: false,
+        createAlarmLock: false,
+        dialogLock: false,
+        dialogProgressLock: false
     };
 
     window.g.cronTimer = {
@@ -178,5 +181,79 @@
             elem.innerText = elem.getAttribute("activetext");
         }
         window.g[setting] = !window.g[setting];
+    };
+
+    window.g.createAlarm = function () {
+        if (!window.g.dialogProgressLock) {
+            if (!window.g.createAlarmLock) {
+                window.g.createAlarmLock = true;
+                document.getElementById("newAlarm").innerHTML = "Cancel &ominus;";
+                document.getElementById("newAlarm").style.filter = "sepia(100%)";
+                window.g.showDialog("createAlarmDialog", function () {
+                    window.g.createAlarmLock = false;
+                });
+                document.getElementById("createButton").style.display = "block";
+                setTimeout(function () {
+                    document.getElementById("createButton").style.opacity = 1;
+                }, 100);
+            } else {
+                document.getElementById("newAlarm").innerHTML = "Create Alarm &oplus;";
+                document.getElementById("newAlarm").style.filter = "";
+                document.getElementById("createButton").style.opacity = 0;
+                window.g.hideDialog("createAlarmDialog", function () {
+                    document.getElementById("createButton").style.display = "none";
+                    window.g.createAlarmLock = false;
+                });
+            }
+        }
+    };
+
+    window.g.showDialog = function (dialog, clbk) {
+        if (window.g.dialogLock) {
+            console.warn("Dialog already shown");
+        } else {
+            window.g.dialogLock = true;
+            window.g.dialogProgressLock = true;
+            document.getElementById("dialogWrapper").style.display = "block";
+            document.getElementById(dialog).style.display = "block";
+            setTimeout(function () {
+                document.getElementById(dialog).style.opacity = 1;
+                setTimeout(function () {
+                    window.g.dialogProgressLock = false;
+                    clbk();
+                }, 1000);
+            }, 100);
+        }
+    };
+
+    window.g.hideDialog = function (dialog, clbk) {
+        if (!window.g.dialogLock) {
+            console.warn("Dialog already hidden");
+        } else {
+            window.g.dialogProgressLock = true;
+            document.getElementById(dialog).style.opacity = 0;
+            setTimeout(function () {
+                document.getElementById("dialogWrapper").style.display = "none";
+                document.getElementById(dialog).style.display = "none";
+                window.g.dialogLock = false;
+                window.g.dialogProgressLock = false;
+                clbk();
+            }, 1000);
+        }
+    };
+
+    window.g.repeatCheck = function () {
+        if (document.getElementById("checkInput_repeat").checked) {
+            document.getElementById("repeatShadow").style.display = "none";
+        } else {
+            document.getElementById("repeatShadow").style.display = "block";
+            document.getElementById("checkInput_sunday").checked = false;
+            document.getElementById("checkInput_monday").checked = false;
+            document.getElementById("checkInput_tuesday").checked = false;
+            document.getElementById("checkInput_wednesday").checked = false;
+            document.getElementById("checkInput_thursday").checked = false;
+            document.getElementById("checkInput_friday").checked = false;
+            document.getElementById("checkInput_saturday").checked = false;
+        }
     };
 })();

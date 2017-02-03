@@ -34,8 +34,243 @@
     <body onload="javascript:init();">
         <div id="site">
             <div id="alarmSide">
-                <div id="alarmHeader"><div id="newAlarm" class="centerY">&oplus;</div></div>
+                <div id="alarmHeader"><div id="createButton" class="centerY" onclick="javascript:window.g.confirmCreateAlarm();">&oplus; Confirm</div><div id="newAlarm" class="centerY" onclick="javascript:window.g.createAlarm();">Create Alarm &oplus;</div></div>
                 <div id="alarmList"></div>
+                <div id="dialogWrapper">
+                    <div id="createAlarmDialog" class="dialog">
+                        <div>
+                            <div class="createAlarmDialogW center">
+                                <input id="textInput_time" class="textInput centerX" type="text" placeholder="Enter a Time (Eg. noon, 3:15)"/>
+                                <div class="interruptedHR" id="createHR1">
+                                    <div class="interruptedHRdiv"><hr></div>
+                                    <div>OR</div>
+                                    <div class="interruptedHRdiv"><hr></div>
+                                </div>
+                                <div id="timeSelectW" class="centerX">
+                                    <div class="nice-select">
+                                        <select>
+                                            <option value="0">00</option>
+                                            <option value="1">01</option>
+                                            <option value="2">02</option>
+                                            <option value="3">03</option>
+                                            <option value="4">04</option>
+                                            <option value="5">05</option>
+                                            <option value="6">06</option>
+                                            <option value="7">07</option>
+                                            <option value="8">08</option>
+                                            <option value="9">09</option>
+                                            <option value="10">10</option>
+                                            <option value="11">11</option>
+                                            <option value="12">12</option>
+                                        </select>
+                                    </div>
+                                    :
+                                    <div class="nice-select">
+                                        <select>
+                                            <option value="0">00</option>
+                                            <option value="1">01</option>
+                                            <option value="2">02</option>
+                                            <option value="3">03</option>
+                                            <option value="4">04</option>
+                                            <option value="5">05</option>
+                                            <option value="6">06</option>
+                                            <option value="7">07</option>
+                                            <option value="8">08</option>
+                                            <option value="9">09</option>
+                                            <option value="10">10</option>
+                                            <option value="11">11</option>
+                                            <option value="12">12</option>
+                                            <option value="13">13</option>
+                                            <option value="14">14</option>
+                                            <option value="15">15</option>
+                                            <option value="16">16</option>
+                                            <option value="17">17</option>
+                                            <option value="18">18</option>
+                                            <option value="19">19</option>
+                                            <option value="20">20</option>
+                                            <option value="21">21</option>
+                                            <option value="22">22</option>
+                                            <option value="23">23</option>
+                                            <option value="24">24</option>
+                                            <option value="25">25</option>
+                                            <option value="26">26</option>
+                                            <option value="27">27</option>
+                                            <option value="28">28</option>
+                                            <option value="29">29</option>
+                                            <option value="30">30</option>
+                                            <option value="31">31</option>
+                                            <option value="32">32</option>
+                                            <option value="33">33</option>
+                                            <option value="34">34</option>
+                                            <option value="35">35</option>
+                                            <option value="36">36</option>
+                                            <option value="37">37</option>
+                                            <option value="38">38</option>
+                                            <option value="39">39</option>
+                                            <option value="40">40</option>
+                                            <option value="41">41</option>
+                                            <option value="42">42</option>
+                                            <option value="43">43</option>
+                                            <option value="44">44</option>
+                                            <option value="45">45</option>
+                                            <option value="46">46</option>
+                                            <option value="47">47</option>
+                                            <option value="48">48</option>
+                                            <option value="49">49</option>
+                                            <option value="50">50</option>
+                                            <option value="51">51</option>
+                                            <option value="52">52</option>
+                                            <option value="53">53</option>
+                                            <option value="54">54</option>
+                                            <option value="55">55</option>
+                                            <option value="56">56</option>
+                                            <option value="57">57</option>
+                                            <option value="58">58</option>
+                                            <option value="59">59</option>
+                                        </select>
+                                    </div>
+                                    :
+                                    <div class="nice-select">
+                                        <select>
+                                            <option value="0">00</option>
+                                            <option value="1">01</option>
+                                            <option value="2">02</option>
+                                            <option value="3">03</option>
+                                            <option value="4">04</option>
+                                            <option value="5">05</option>
+                                            <option value="6">06</option>
+                                            <option value="7">07</option>
+                                            <option value="8">08</option>
+                                            <option value="9">09</option>
+                                            <option value="10">10</option>
+                                            <option value="11">11</option>
+                                            <option value="12">12</option>
+                                            <option value="13">13</option>
+                                            <option value="14">14</option>
+                                            <option value="15">15</option>
+                                            <option value="16">16</option>
+                                            <option value="17">17</option>
+                                            <option value="18">18</option>
+                                            <option value="19">19</option>
+                                            <option value="20">20</option>
+                                            <option value="21">21</option>
+                                            <option value="22">22</option>
+                                            <option value="23">23</option>
+                                            <option value="24">24</option>
+                                            <option value="25">25</option>
+                                            <option value="26">26</option>
+                                            <option value="27">27</option>
+                                            <option value="28">28</option>
+                                            <option value="29">29</option>
+                                            <option value="30">30</option>
+                                            <option value="31">31</option>
+                                            <option value="32">32</option>
+                                            <option value="33">33</option>
+                                            <option value="34">34</option>
+                                            <option value="35">35</option>
+                                            <option value="36">36</option>
+                                            <option value="37">37</option>
+                                            <option value="38">38</option>
+                                            <option value="39">39</option>
+                                            <option value="40">40</option>
+                                            <option value="41">41</option>
+                                            <option value="42">42</option>
+                                            <option value="43">43</option>
+                                            <option value="44">44</option>
+                                            <option value="45">45</option>
+                                            <option value="46">46</option>
+                                            <option value="47">47</option>
+                                            <option value="48">48</option>
+                                            <option value="49">49</option>
+                                            <option value="50">50</option>
+                                            <option value="51">51</option>
+                                            <option value="52">52</option>
+                                            <option value="53">53</option>
+                                            <option value="54">54</option>
+                                            <option value="55">55</option>
+                                            <option value="56">56</option>
+                                            <option value="57">57</option>
+                                            <option value="58">58</option>
+                                            <option value="59">59</option>
+                                        </select>
+                                    </div>
+                                    <div class="nice-select">
+                                        <select>
+                                            <option value="am">AM</option>
+                                            <option value="pm">PM</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="createAlarmDialogW center">
+                                <div class="centerX">
+                                    <label for="checkInput_repeat"></label>
+                                    <label class="checkboxInput">
+                                        <input id="checkInput_repeat" type="checkbox" name="checkInput_repeat" onclick="javascript:window.g.repeatCheck();"/>
+                                        <span></span>
+                                    </label>
+                                    Repeat
+                                </div>
+                                <hr>
+                                <div class="centerX">
+                                    <div id="repeatShadow" class="overshadow"></div>
+                                    <div id="repeatSelectW">
+                                        <label for="checkInput_sunday"></label>
+                                        <label class="checkboxInput">
+                                            <input id="checkInput_sunday" type="checkbox" name="checkInput_sunday"/>
+                                            <span></span>
+                                        </label>
+                                        Su&nbsp;
+
+                                        <label for="checkInput_monday"></label>
+                                        <label class="checkboxInput">
+                                            <input id="checkInput_monday" type="checkbox" name="checkInput_monday"/>
+                                            <span></span>
+                                        </label>
+                                        M&nbsp;
+
+                                        <label for="checkInput_tuesday"></label>
+                                        <label class="checkboxInput">
+                                            <input id="checkInput_tuesday" type="checkbox" name="checkInput_tuesday"/>
+                                            <span></span>
+                                        </label>
+                                        Tu&nbsp;
+
+                                        <label for="checkInput_wednesday"></label>
+                                        <label class="checkboxInput">
+                                            <input id="checkInput_wednesday" type="checkbox" name="checkInput_wednesday"/>
+                                            <span></span>
+                                        </label>
+                                        W&nbsp;
+
+                                        <label for="checkInput_thursday"></label>
+                                        <label class="checkboxInput">
+                                            <input id="checkInput_thursday" type="checkbox" name="checkInput_thursday"/>
+                                            <span></span>
+                                        </label>
+                                        Th&nbsp;
+
+                                        <label for="checkInput_friday"></label>
+                                        <label class="checkboxInput">
+                                            <input id="checkInput_friday" type="checkbox" name="checkInput_friday"/>
+                                            <span></span>
+                                        </label>
+                                        F&nbsp;
+
+                                        <label for="checkInput_saturday"></label>
+                                        <label class="checkboxInput">
+                                            <input id="checkInput_saturday" type="checkbox" name="checkInput_saturday"/>
+                                            <span></span>
+                                        </label>
+                                        S
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div id="clockSide">
                 <div id="settingsButton" onclick="javascript:window.g.settingsClick();"></div>
