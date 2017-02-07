@@ -133,19 +133,27 @@
                 document.getElementById("analogClock").style.display = "block";
                 window.g.displayLatch = window.g.displayMode;
             }
-            window.g.rotateHand(document.getElementById("analogClock_hourHand").style, window.g.timeToDeg(clockTime.h), "hourReachAroundLatch");
-            window.g.rotateHand(document.getElementById("analogClock_minuteHand").style, window.g.timeToDeg(clockTime.m), "minuteReachAroundLatch");
-            window.g.rotateHand(document.getElementById("analogClock_secondHand").style, window.g.timeToDeg(clockTime.s), "secondReachAroundLatch");
+            window.g.rotateHand(document.getElementById("analogClock_hourHand").style, window.g.timeToDeg12(clockTime.h), "hourReachAroundLatch");
+            window.g.rotateHand(document.getElementById("analogClock_minuteHand").style, window.g.timeToDeg60(clockTime.m), "minuteReachAroundLatch");
+            window.g.rotateHand(document.getElementById("analogClock_secondHand").style, window.g.timeToDeg60(clockTime.s), "secondReachAroundLatch");
             document.getElementById("analogClockModifier").innerText = (clockTime.n ? "P" : "A") + "M";
         }
     };
 
-    window.g.timeToDeg = function (numTime) {
+    window.g.timeToDeg60 = function (numTime) {
         if (numTime > 60) {
-            console.warn("Invalid time", numTime);
+            console.warn("[60] Invalid time", numTime);
             return;
         }
         return numTime * (360.0 / 60.0);
+    };
+
+    window.g.timeToDeg12 = function (numTime) {
+        if (numTime > 12) {
+            console.warn("[12] Invalid time", numTime);
+            return;
+        }
+        return numTime * (360.0 / 12.0);
     };
 
     window.g.rotateHand = function (hand, deg, latch) {
