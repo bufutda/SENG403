@@ -223,7 +223,7 @@
                                             <div id="musicSelect" class="nice-select">
                                                 <select>
                                                     <option value="/alarmclock/tones/oman.mp3">Ocean Sounds</option>
-                                                    <option value="/alarmclock/tones/boobalee.mp3">Pirate Song</options>
+                                                    <option value="/alarmclock/tones/boobalee.mp3">Pirate Song</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -302,6 +302,17 @@
                 <div id="settings">
                     <div class="settingSwitchW">
                         <span>Display Mode:</span><div class="settingSwitchToggle settingSwitchToggleActive" id="setting_displayMode" activetext="DIGITAL" inactivetext="ANALOG" onclick="javascript:window.g.changeSetting('displayMode');"></div>
+                    </div>
+                    <hr>
+                    <div class="settingSwitchW" id="snoozeSettingW">
+                        <span class="centerY">Snooze Time:</span>
+                        <div class="nice-select">
+                            <select onchange="javascript:window.g.snoozeAmount = parseInt(document.querySelector('#snoozeSettingW select').value, 10);">
+                                <option value="30000">30 Seconds</option>
+                                <option value="60000">1 Minute</option>
+                                <option value="300000">5 Minutes</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <div id="digitalClockWrapper" class="center">
