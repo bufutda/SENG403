@@ -73,6 +73,12 @@
         };
 
         self.ring = function (msg) {
+            var alarmAudio = document.createElement("audio");
+            alarmAudio.setAttribute("autoplay", true);
+            alarmAudio.setAttribute("loop", true);
+            alarmAudio.setAttribute("type", "audio/mpeg");
+            alarmAudio.setAttribute("src", self.audioPath);
+            self.elem.appendChild(alarmAudio);
             window.g.displayAlarm(msg, function () {
                 // dismiss
                 if (!self.doRepeat) {
@@ -80,6 +86,7 @@
                 }
             }, function () {
                 // snooze
+                alarmAudio.remove();
                 setTimeout(function () {
                     console.log("snooze over");
                     self.ring("SNOOZE for alarm: " + self.timeStr());
