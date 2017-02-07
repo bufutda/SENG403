@@ -166,13 +166,13 @@
                     setTimeout(function () {
                         hand.transition = "0.5s";
                         hand.transform = "rotate(0)";
-                        setTimeout(function () {
-                            window.g[latch] = false;
-                        }, 1000);
                     }, 50);
                 }, 50);
             }
         } else {
+            if (window.g[latch]) {
+                window.g[latch] = false;
+            }
             hand.transform = "rotate(" + deg + "deg)";
         }
     };
