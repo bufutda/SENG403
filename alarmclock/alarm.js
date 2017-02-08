@@ -23,6 +23,7 @@
             6: repeat.days.sat
         };
         self.audioPath = audio;
+        self.repeatHandlerID = null;
 
         self.repeatStr = function () {
             var str = [];
@@ -43,6 +44,9 @@
         };
 
         self.deleteHandler = function () {
+            if (self.repeatHandlerID) {
+                clearInterval(self.repeatHandlerID);
+            }
             self.elem.remove();
             window.g.alarms.splice(self.index, 1);
             delete this;
@@ -50,21 +54,29 @@
 
         self.setTimer = function () {
             window.g.cronTimer.on("minute", function listener (clockTime) {
-                if ((clockTime.h === self.alarmTime.h) && (clockTime.m === self.alarmTime.m)) {
+                if ((!self.doRepeat || self.repeat[clockTime.d]) && (clockTime.t === self.alarmTime.h) && (clockTime.m === self.alarmTime.m)) {
                     window.g.cronTimer.off("minute", listener);
                     if (self.alarmTime.s === 0) {
                         self.ring("It is now " + self.timeStr());
-                        if (self.doRepeat) {
-                            self.setTimer();
-                        }
+                        self.repeatHandlerID = setTimeout(function () {
+                            self.repeatHandlerID = null;
+                            if (self.doRepeat) {
+                                console.info(self.index, "Repeating alarm");
+                                // self.setTimer();
+                            }
+                        }, 10000);
                     } else {
                         window.g.cronTimer.on("tick", function tickListener (clockTime) {
                             if (clockTime.s >= self.alarmTime.s) {
                                 window.g.cronTimer.off("tick", tickListener);
                                 self.ring("It is now " + self.timeStr());
-                                if (self.doRepeat) {
-                                    self.setTimer();
-                                }
+                                self.repeatHandlerID = setTimeout(function () {
+                                    self.repeatHandlerID = null;
+                                    if (self.doRepeat) {
+                                        console.info(self.index, "Repeating alarm");
+                                        // self.setTimer();
+                                    }
+                                }, 10000);
                             }
                         });
                     }
@@ -81,6 +93,7 @@
             self.elem.appendChild(alarmAudio);
             window.g.displayAlarm(msg, function () {
                 // dismiss
+                alarmAudio.remove();
                 if (!self.doRepeat) {
                     self.deleteHandler();
                 }

@@ -46,7 +46,8 @@
                 m: time.getMinutes(),
                 h: time.getHours() % 12,
                 t: time.getHours(),
-                n: time.getHours() > 12
+                n: time.getHours() > 12,
+                d: time.getDay()
             };
             window.g.cronTimer.emit("tick", clockTime);
             window.g.updateBigClock(clockTime);
@@ -73,6 +74,7 @@
             }
         },
         on: function (event, handler) {
+            console.info("New listener on " + event, window.g.cronTimer.listeners.hasOwnProperty(event) ? window.g.cronTimer.listeners[event].length : 0);
             if (!window.g.cronTimer.listeners.hasOwnProperty(event)) {
                 window.g.cronTimer.listeners[event] = [];
             }
@@ -83,10 +85,12 @@
                 m: time.getMinutes(),
                 h: time.getHours() % 12,
                 t: time.getHours(),
-                n: time.getHours() > 12
+                n: time.getHours() > 12,
+                d: time.getDay()
             });
         },
         off: function (event, handler) {
+            console.info("Removed listener on " + event);
             if (window.g.cronTimer.listeners.hasOwnProperty(event)) {
                 var i = window.g.cronTimer.listeners[event].indexOf(handler);
                 if (i > -1) {
@@ -99,6 +103,9 @@
             }
         },
         emit: function (event, arg) {
+            if (event !== "tick") {
+                console.info("[E] " + event);
+            }
             if (!(arg instanceof Array)) {
                 arg = [arg];
             }
@@ -288,23 +295,134 @@
         }
     };
 
+    window.g.parseChronoParse = function (parsed) {
+        if (parsed.hasOwnProperty("start") && parsed.start.knownValues.hasOwnProperty("hour")) {
+            return {
+                h: parsed.start.knownValues.hour,
+                m: parsed.start.knownValues.minute ? parsed.start.knownValues.minute : 0,
+                s: parsed.start.knownValues.second ? parsed.start.knownValues.second : 0,
+                d: parsed.start.knownValues.weekday
+            };
+        }
+        return {
+            d: parsed.start.knownValues.weekday
+        };
+    };
+
+    window.g.activateRepeat = function (repeatDay) {
+        document.getElementById("checkInput_repeat").checked = true;
+        window.g.repeatCheck();
+        var day;
+        switch (repeatDay) {
+            case 0: day = "sunday"; break;
+            case 1: day = "monday"; break;
+            case 2: day = "tuesday"; break;
+            case 3: day = "wednesday"; break;
+            case 4: day = "thursday"; break;
+            case 5: day = "friday"; break;
+            case 6: day = "saturday"; break;
+            default:
+                console.warn("Bad day", repeatDay);
+                break;
+        }
+        document.getElementById("checkInput_" + day).checked = true;
+    };
+
     window.g.processTimeText = function () {
-        var date = window.chrono.parseDate(document.getElementById("textInput_time").value);
-        if (date === null) {
-            var elem = document.querySelector("#createAlarmDialog > div:first-child");
-            elem.style["background-color"] = "#945353";
-            setTimeout(function () {
-                elem.style.transition = "1s";
-                elem.style["background-color"] = "#606060";
+        var parseStuff = window.chrono.parse(document.getElementById("textInput_time").value);
+        switch (parseStuff.length) {
+            case 0:
+                var elem = document.querySelector("#createAlarmDialog > div:first-child");
+                elem.style["background-color"] = "#945353";
                 setTimeout(function () {
-                    elem.style.transition = "0s";
-                }, 1000);
-            }, 100);
-        } else {
-            document.querySelector("#timeSelect_hour select").value = (date.getHours() > 12 ? date.getHours() - 12 : date.getHours()).toString();
-            document.querySelector("#timeSelect_minute select").value = date.getMinutes().toString();
-            document.querySelector("#timeSelect_second select").value = date.getSeconds().toString();
-            document.querySelector("#timeSelect_modifier select").value = date.getHours() >= 12 ? "pm" : "am";
+                    elem.style.transition = "1s";
+                    elem.style["background-color"] = "#606060";
+                    setTimeout(function () {
+                        elem.style.transition = "0s";
+                    }, 1000);
+                }, 100);
+                break;
+            case 1:
+                var parsed = window.g.parseChronoParse(parseStuff[0]);
+                if (!parsed.hasOwnProperty("h")) {
+                    var elem = document.querySelector("#createAlarmDialog > div:first-child");
+                    elem.style["background-color"] = "#945353";
+                    setTimeout(function () {
+                        elem.style.transition = "1s";
+                        elem.style["background-color"] = "#606060";
+                        setTimeout(function () {
+                            elem.style.transition = "0s";
+                        }, 1000);
+                    }, 100);
+                    return;
+                }
+                document.getElementById("checkInput_repeat").checked = false;
+                window.g.repeatCheck();
+                if (parsed.d) {
+                    window.g.activateRepeat(parsed.d);
+                }
+                document.querySelector("#timeSelect_hour select").value = (parsed.h > 12 ? parsed.h - 12 : parsed.h).toString();
+                document.querySelector("#timeSelect_minute select").value = parsed.m.toString();
+                document.querySelector("#timeSelect_second select").value = parsed.s.toString();
+                document.querySelector("#timeSelect_modifier select").value = parsed.h >= 12 ? "pm" : "am";
+                break;
+            default:
+                var timeFlag = false;
+                var time;
+                var repeatDates = [];
+                for (var i = 0; i < parseStuff.length; i++) {
+                    var parsed = window.g.parseChronoParse(parseStuff[i]);
+                    console.log(parsed);
+                    if (!parsed.hasOwnProperty("h")) {
+                        if (parsed.d) {
+                            repeatDates.push(parsed.d);
+                        }
+                    } else {
+                        if (parsed.d) {
+                            repeatDates.push(parsed.d);
+                        }
+                        if (!timeFlag) {
+                            timeFlag = true;
+                            time = parsed;
+                        } else {
+                            var elem = document.querySelector("#createAlarmDialog > div:first-child");
+                            elem.style["background-color"] = "#945353";
+                            setTimeout(function () {
+                                elem.style.transition = "1s";
+                                elem.style["background-color"] = "#606060";
+                                setTimeout(function () {
+                                    elem.style.transition = "0s";
+                                }, 1000);
+                            }, 100);
+                            return;
+                        }
+                    }
+                }
+                if (timeFlag) {
+                    document.querySelector("#timeSelect_hour select").value = (time.h > 12 ? time.h - 12 : time.h).toString();
+                    document.querySelector("#timeSelect_minute select").value = time.m.toString();
+                    document.querySelector("#timeSelect_second select").value = time.s.toString();
+                    document.querySelector("#timeSelect_modifier select").value = time.h >= 12 ? "pm" : "am";
+                    document.getElementById("checkInput_repeat").checked = false;
+                    window.g.repeatCheck();
+                    if (repeatDates.length) {
+                        for (var i = 0; i < repeatDates.length; i++) {
+                            window.g.activateRepeat(repeatDates[i]);
+                        }
+                    }
+                } else {
+                    var elem = document.querySelector("#createAlarmDialog > div:first-child");
+                    elem.style["background-color"] = "#945353";
+                    setTimeout(function () {
+                        elem.style.transition = "1s";
+                        elem.style["background-color"] = "#606060";
+                        setTimeout(function () {
+                            elem.style.transition = "0s";
+                        }, 1000);
+                    }, 100);
+                    return;
+                }
+                break;
         }
     };
 
