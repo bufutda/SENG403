@@ -9,86 +9,86 @@ What we need:
 
 
 As a student, I need a way to see the time so that I know if I'm on schedule.
-Estimates: 3 hours
+Estimates: 10 points
 Priority: 1
 ID: 1
 Acceptance criteria:
 	-Program shows clock, current time.
 	-Doesn't matter between digital/analog.
-	
+
 As a cashier, I need a way to notify me of the time so I can arrive on time for work.
-Estimates: 1 hour
+Estimates: 8 points
 Priority: 2
 ID: 2
 Acceptance criteria:
 	-Notification appears at appointed time.
 	-Sound plays with notification.
-	
-As a librarian, i need a way to turn off an alarm so that I do not disturb people at my workplace.
-Estimates: 1 hour
+
+As a librarian, I need a way to turn off an alarm so that I do not disturb people at my workplace.
+Estimates: 3 points
 Priority: 3
 ID: 3
 Acceptance criteria:
 	-Ability to dismiss notification
 	-Sound stops on dismissal.
-	
-As a hairdresser, i need a way to cancel notifications so that I can avoid preparing for canceled appointments.
-Estimates: 1 hour
+
+As a hairdresser, I need a way to cancel notifications so that I can avoid preparing for canceled appointments.
+Estimates: 2 points
 Priority: 4
 ID: 4
 Acceptance criteria:
 	-Ability to dismiss notification before appointed time.
-	
+
 As a heavy sleeper, I need a way to delay an alarm so that I can sleep longer without completely ignoring my schedule.
-Estimates: 1 hour
+Estimates: 4 points
 Priority: 5
 ID: 5
 Acceptance criteria:
 	-Way to disable notification while active
-	-disabling sets a one-time notification 10 minutes later
-	
+	-Disabling sets a one-time notification 10 minutes later
+
 As a student, I need a way to set multiple alarms so that I can attend all my classes.
-Estimates: 1 hour 
+Estimates: 2 points
 Priority: 6
 ID: 6
 Acceptance criteria:
 	-Multiple notifications can be set
 	-Not worried about 2 notifications at same time
-	
-As a gardener, i need a way to remind me daily of tasks so that I can properly care for my plants.
-Estimates: 2 hours 
+
+As a gardener, I need a way to remind me of daily tasks so that I can properly care for my plants.
+Estimates: 4 points
 Priority: 7
 ID: 7
 Acceptance criteria:
 	-Notification can be set to activate daily
 	-Dismissing notification doesn't delete it.
-	
+
 As a dancer, I need a way to remind me of my weekly lesson so that I am not late.
-Estimates: 1 hour
+Estimates: 5 points
 Priority: 8
 ID: 8
 Acceptance criteria:
 	-Notification can be set to activate once a week, on a certain day.
 	-Dismissing notification doesn't delete it.
-	
-As a sound designer, I need my alarms to be a variety of noises so that i do not mistake them for something I am working on.
-Estimates: 1 hour 
+
+As a sound designer, I need my alarms to be a variety of noises so that I do not mistake them for something I am working on.
+Estimates: 3 points
 Priority: 9
 ID: 9
 Acceptance criteria:
 	-Notification sound can be changed.
 	-Unknown how many sounds would be sufficient.
-	
+
 As a fashionista, I want an alarm that can change styles so that my phone can suit my mood.
-Estimates: 1 hour
+Estimates: 7 points
 Priority: 10
 ID: 10
 Acceptance criteria:
 	-Can change between digital and analog.
 	-Notifications work for both.
-	
+
 As a surgeon, I need a way to change the length of alarms so that I can alter my sleep schedule whether or not I'm on call.
-Estimates: 1 hour 
+Estimates: 2 points
 Priority: 11
 ID: 11
 Acceptance criteria:
