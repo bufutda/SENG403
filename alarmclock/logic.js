@@ -17,6 +17,7 @@
     window.g.goingOff = false;
     window.g.alarmRingCount = 0;
     window.g.snoozeAmount = 30000;
+    window.g.increaseTime = 0;
 
     window.g.cronTimer = {
         tmr: NaN,
@@ -118,6 +119,9 @@
             }
         },
         getTime: function () {
+            if (window.g.increaseTime) {
+                return new Date((new Date()).getTime() + window.g.increaseTime);
+            }
             return new Date();
         }
     };
