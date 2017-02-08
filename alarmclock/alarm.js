@@ -24,7 +24,8 @@
         };
         self.audioPath = audio;
         self.repeatHandlerID = null;
-
+        self.minuteListening = false;
+        self.tickListening = false;
         self.repeatStr = function () {
             var str = [];
             if (self.repeat[0]) { str.push("Su"); }
@@ -44,6 +45,14 @@
         };
 
         self.deleteHandler = function () {
+            if (self.minuteListening) {
+                window.g.cronTimer.off("minute", self.minuteListener);
+                self.minuteListening = false;
+            }
+            if (self.tickListening) {
+                window.g.cronTimer.off("tick", self.tickListener);
+                self.tickListening = false;
+            }
             if (self.repeatHandlerID) {
                 clearInterval(self.repeatHandlerID);
             }
@@ -52,36 +61,43 @@
             delete this;
         };
 
-        self.setTimer = function () {
-            window.g.cronTimer.on("minute", function listener (clockTime) {
-                if ((!self.doRepeat || self.repeat[clockTime.d]) && (clockTime.t === self.alarmTime.h) && (clockTime.m === self.alarmTime.m)) {
-                    window.g.cronTimer.off("minute", listener);
-                    if (self.alarmTime.s === 0) {
-                        self.ring("It is now " + self.timeStr());
-                        self.repeatHandlerID = setTimeout(function () {
-                            self.repeatHandlerID = null;
-                            if (self.doRepeat) {
-                                console.info(self.index, "Repeating alarm");
-                                // self.setTimer();
-                            }
-                        }, 10000);
-                    } else {
-                        window.g.cronTimer.on("tick", function tickListener (clockTime) {
-                            if (clockTime.s >= self.alarmTime.s) {
-                                window.g.cronTimer.off("tick", tickListener);
-                                self.ring("It is now " + self.timeStr());
-                                self.repeatHandlerID = setTimeout(function () {
-                                    self.repeatHandlerID = null;
-                                    if (self.doRepeat) {
-                                        console.info(self.index, "Repeating alarm");
-                                        // self.setTimer();
-                                    }
-                                }, 10000);
-                            }
-                        });
+        self.tickListener = function (clockTime) {
+            if (clockTime.s >= self.alarmTime.s) {
+                self.tickListening = false;
+                window.g.cronTimer.off("tick", self.tickListener);
+                self.ring("It is now " + self.timeStr());
+                self.repeatHandlerID = setTimeout(function () {
+                    self.repeatHandlerID = null;
+                    if (self.doRepeat) {
+                        console.info(self.index, "Repeating alarm");
+                        // self.setTimer();
                     }
+                }, 10000);
+            }
+        };
+
+        self.minuteListener = function (clockTime) {
+            if ((!self.doRepeat || self.repeat[clockTime.d]) && (clockTime.t === self.alarmTime.h) && (clockTime.m === self.alarmTime.m)) {
+                self.minuteListening = false;
+                window.g.cronTimer.off("minute", self.minuteListener);
+                if (self.alarmTime.s === 0) {
+                    self.ring("It is now " + self.timeStr());
+                    self.repeatHandlerID = setTimeout(function () {
+                        self.repeatHandlerID = null;
+                        if (self.doRepeat) {
+                            console.info(self.index, "Repeating alarm");
+                            // self.setTimer();
+                        }
+                    }, 10000);
+                } else {
+                    self.tickListening = true;
+                    window.g.cronTimer.on("tick", self.tickListener);
                 }
-            });
+            }
+        };
+        self.setTimer = function () {
+            self.minuteListening = true;
+            window.g.cronTimer.on("minute", self.minuteListener);
         };
 
         self.ring = function (msg) {
