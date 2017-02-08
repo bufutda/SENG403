@@ -1,9 +1,6 @@
 ::-webkit-scrollbar {
     display: none;
 }
-html {
-    overflow: -moz-scrollbars-none !important;
-}
 :focus {
     outline: none !important;
 }
@@ -194,7 +191,7 @@ html {
 }
 #alarmList {
     position: absolute;
-    top: 75px; left: 0; right: 0; bottom: 0;
+    top: 75px; left: 0; right: -16px; bottom: 0;
     overflow-y: scroll;
     overflow-x: hidden;
 }
