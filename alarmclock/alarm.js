@@ -66,13 +66,6 @@
                 self.tickListening = false;
                 window.g.cronTimer.off("tick", self.tickListener);
                 self.ring("It is now " + self.timeStr());
-                self.repeatHandlerID = setTimeout(function () {
-                    self.repeatHandlerID = null;
-                    if (self.doRepeat) {
-                        console.info(self.index, "Repeating alarm");
-                        // self.setTimer();
-                    }
-                }, 10000);
             }
         };
 
@@ -82,13 +75,6 @@
                 window.g.cronTimer.off("minute", self.minuteListener);
                 if (self.alarmTime.s === 0) {
                     self.ring("It is now " + self.timeStr());
-                    self.repeatHandlerID = setTimeout(function () {
-                        self.repeatHandlerID = null;
-                        if (self.doRepeat) {
-                            console.info(self.index, "Repeating alarm");
-                            // self.setTimer();
-                        }
-                    }, 10000);
                 } else {
                     self.tickListening = true;
                     window.g.cronTimer.on("tick", self.tickListener);
@@ -112,6 +98,14 @@
                 alarmAudio.remove();
                 if (!self.doRepeat) {
                     self.deleteHandler();
+                } else {
+                    self.repeatHandlerID = setTimeout(function () {
+                        self.repeatHandlerID = null;
+                        if (self.doRepeat) {
+                            console.info(self.index, "Repeating alarm");
+                            self.setTimer();
+                        }
+                    }, 62000);
                 }
             }, function () {
                 // snooze
