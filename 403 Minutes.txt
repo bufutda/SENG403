@@ -1,7 +1,7 @@
-Alarm Clock Requirements:
-- Sawatzky is taking notes
+01/25/17 - Initial Tutorial (Sprint Description) Minutes:
+
 - Building alarm clock
-- Can use any platform (web, phone, desktpo, tablet, etc.)
+- Can use any platform (web, phone, desktop, tablet, etc.)
 - Not raspberry pi
 - 12 hour time for now
 - FULL SCREEN IDEAL (not req)
@@ -15,12 +15,11 @@ Alarm Clock Requirements:
 - 7: Daily repeating alarms
 - 8: Schedule an alarm for a day of the week (ex: Tuesdays+Thursdays, just Mondays)
 - 9: Assign different ringtones
-- 10: Choose digital or analog display for current time (not nec for alarms)
+- 10: Choose digital or analog display for current time (not necessary for setting alarms)
 - 11: Set snooze time period (snooze after 10 min, 1 hour, etc.)
 - - - Global setting
 - Have to be present for demo
 - No preference of time zone handling
-- Ruble saved us 15 min in class
 - Should have an easy way to change time/date mid test for demoes
 - As many as possible done, but ~ 3 acceptable for first sprint.
 - Midway through term major change to product happening.
@@ -33,8 +32,65 @@ Alarm Clock Requirements:
 - - - Majority vote
 - - - Read notes
 - - - Test to make sure git commits work over android studio
-- - - Get gavel Connor pls
+- - - Connor getting gavel for meetings
 - - Download Android App Studio
-- - Renaming SCRUM to SCUM?
 - First 4 requirements for first sprint
 - Sawatzky gave Ruble git training 01/25/17
+
+01/26/17 - Standup #1 Minutes:
+
+- About to start development
+- At the very least want to get the first 3 requirements done
+- - Can assess if any more are possible/realistic once development gets underway
+- Meeting in Wednesday tutorials + our 2 standup meetings
+- - Monday tutorial Ruble/Stern are going to attend to ensure we don't miss anything
+
+01/31/17 - Standup $2 Minutes:
+
+- Not enjoying Android App Studio/finding many things to aid us
+- - At this stage of project it may be easier to port it over to
+- Began discussing the user stories/burndown/board section of the project
+
+02/01/17 - Tutorial Meeting #2 Minutes:
+
+- Designing/syncing between group members on Android app not as easy as predicted
+- - To solve this we're moving to a javascript web-app
+- - Hosted on Sawatzky's website (.watz.ky/alarmclock/)
+- - Sawatzky leading development, Newman leading testing
+- - With this style it looks like we can do the first ~6 requirements for the sprint
+- Stern working on user stories to help with development
+- Rudy considering/committing to burndown charts to aid development
+- Ruble has board made for our meetings to track our progress
+- Gavel currently shipping for meetings
+
+02/02/17 - Standup #3 Minutes:
+
+- Web-app has made development much nicer
+- Set up github page to store all of the code we have
+- Webpage is set to update based on github state
+- Currently have the digital/analog clock design made and functioning
+- - Need to fix odd behaviour of clock arms rotating past 0, though.
+- Stern made starfish chart
+- Ruble brought interim pencil gavel
+
+02/07/17 - Standup #4 Minutes:
+
+- Web-app is looking even better than originally thought
+- All 11 requirements being done seems feasible
+- Only need to implement repeating alarms to complete this
+- A few bugs (documented on the github) to fix for tomorrow, but that shouldn't be an issue
+
+02/08/17 - Tutorial Meeting #3 (sprint demo #1) Minutes:
+
+- All 11 requirements met
+- All bugs fixed
+- TA seemed happy with our progress
+- Only thing left for sprint report is collecting our paperwork into a compact report
+
+
+02/09/17 - Standup #5 Minutes:
+
+- Sprint went quite well
+- Waiting for instruction for next sprint
+- Need to put all of the paperwork we've done together to finish report
+- - Collaborate over Slack to organize that
