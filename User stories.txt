@@ -118,7 +118,7 @@ Acceptance criteria:
 
 -Alarms should work if the program is closed
 As a programmer, I want to be alerted even if the program is closed so that I can use my computer's power for compiling.
-Estimates: One gazillion points
+Estimates: 100 points
 Priority: 7 (VERY LOW, MAY SKIP)
 ID: 14
 Acceptance criteria:
