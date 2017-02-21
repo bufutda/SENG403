@@ -7,7 +7,7 @@ What we need:
 	-burn down chart
 
 
-
+Sprint 1:
 As a student, I need a way to see the time so that I know if I'm on schedule.
 Estimates: 10 points
 Priority: 1
@@ -94,3 +94,69 @@ ID: 11
 Acceptance criteria:
 	-Option to change delay of #5.
 	-Currently global setting.
+
+
+Sprint 2 Requirements:
+
+-Able to change the time of different alarms
+As a , I want to change the time of notifications so that blah.
+Estimates: 2 points
+Priority: 1
+ID: 12
+Acceptance criteria:
+        -Can change time of created alarm.
+        -Alarm goes off at new time, not old one.
+
+-Alarms should work after device/computer is restarted
+As a landscaper, I want to be alerted after I restart my computer so that my alarms will still work even after my phone loses power.
+Estimates: 10 points
+Priority: 6?
+ID: 13
+Acceptance criteria:
+        -Alarm still goes off after power cycle.
+
+
+-Alarms should work if the program is closed
+As a programmer, I want to be alerted even if the program is closed so that I can use my computer's power for compiling.
+Estimates: One gazillion points
+Priority: 7 (VERY LOW, MAY SKIP)
+ID: 14
+Acceptance criteria:
+        -Alarm still goes off after program is closed.
+
+-handle multiple alarms gracefully
+As a secretary, I want multiple alarms to go off at the same time so that I can keep track of multiple people's schedules.
+Estimates: 2 points
+Priority: 2
+ID: 15
+Acceptance criteria:
+        -Program does not crash when multiple alarms go off at once.
+
+-able to change ringtones of individual alarms
+As a musician, I want to change the sound of individual alarms so that I can tell what alarm is going off without looking.
+Estimates: 4 points
+Priority: 3
+ID: 16
+Acceptance criteria:
+        -User can change sound of individual alarms.
+        -New sound plays on alarm.
+
+-able to set time zones
+As someone on vacation, I want to set the time zone of an alarm so that I can keep a schedule no matter where I am.
+Estimates: 5 points
+Priority: 4
+ID: 17
+Acceptance criteria:
+        -Program determines user's time zone. (?)
+        -User can set alarm for any time zone.
+
+-visualize data usage (e.g. show visualization of # of alarms going off in a day/week, # of snoozes, etc.)
+As a blah, I want to see the usage of the program so that blah.
+Estimates: 10 points
+Priority: 5
+ID: 18
+Acceptance criteria:
+        -User can view graphs of their:
+                -Alarms per day
+                -Alarms per week
+                -Number of snooze activations (per day? week? an average? overall?)
