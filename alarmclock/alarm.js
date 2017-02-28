@@ -134,6 +134,14 @@
         });
         self.elem.appendChild(cancelButton);
 
+        self.exportAlarm = function () {
+            return {
+                time: self.alarmTime,
+                repeat: self.repeat,
+                audioPath: self.audioPath
+            };
+        };
+
         self.setTimer();
     };
 })();

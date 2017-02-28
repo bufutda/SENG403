@@ -523,4 +523,33 @@
             snooze();
         }
     };
+
+    window.g.uploadAlarms = function () {
+        var toExport = [];
+        for (var i = 0; i < window.g.alarms.length; i++) {
+            toExport.push(window.g.alarms[i].exportAlarm());
+        }
+        var request = new XMLHttpRequest();
+        request.onload = function () {
+            console.log("Request came back " + request.status);
+            var data;
+            try {
+                data = JSON.parse(request.responseText);
+            } catch (e) {
+                console.error(e);
+                return;
+            }
+            switch (request.status) {
+                case 200:
+                    console.log("Data was", data);
+                    break;
+                default:
+                    console.error("Bad code: " + request.status);
+                    return;
+            }
+        };
+        request.open("POST", "https://sa.watz.ky:6969", true);
+        request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        request.send(JSON.stringify({alarms: toExport, tz: window.g.timezone}));
+    };
 })();
