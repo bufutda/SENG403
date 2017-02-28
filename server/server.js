@@ -1,11 +1,13 @@
 "use strict";
 var https = require("https");
 var fs = require("fs");
+var wss = require("ws");
 
 global.key = fs.readFileSync("/etc/apache2/ssl/watz_d.key");
 global.cert = fs.readFileSync("/etc/apache2/ssl/watz.crt");
 global.port = 6969;
 var alarms = [];
+var activeAlarms = {};
 var ccount = 1;
 
 console.log("Creating server...");
@@ -164,6 +166,7 @@ var server = https.createServer({key: global.key, cert: global.cert}, function (
                         console.log(`${REQ_ID} saving alarms`);
                         alarms = postedData.alarms;
                         console.log(`${REQ_ID} terminating...`);
+                        updateAlarms(REQ_ID);
                         response.end(JSON.stringify({error: false, message: null}));
                     } else {
                         console.log(`${REQ_ID} bad data, terminating...`);
@@ -200,3 +203,45 @@ server.listen(global.port, function (e) {
     }
     console.log("Listening on " + global.port);
 });
+
+function updateAlarms (REQ_ID) {
+    console.log(`${REQ_ID} updating activeAlarms...`);
+    for (var prop in activeAlarms) {
+        clearTimeout(activeAlarms[prop]);
+        delete activeAlarms[prop];
+    }
+    console.log(`${REQ_ID} ${alarms.length} to go through`);
+    for (var i = 0; i < alarms.length; i++) {
+        console.log(`${REQ_ID} [ActiveAlarm ${i}] parsing...`);
+        var ams = ((alarms[i].time.h * 3600) + (alarms[i].time.m * 60) + alarms[i].time.s) * 1000;
+        var now = new Date();
+        var tms = ((now.getHours() * 3600) + (now.getMinutes() * 60) + now.getSeconds()) * 1000;
+
+        var msleft;
+        if (ams < tms) {
+            // tomorrow
+            msleft = (86400000 - tms) + ams;
+        } else if (ams > tms) {
+            // soon
+            var msleft = ams - tms;
+        } else {
+            // now...?
+            console.log(`${REQ_ID} [ActiveAlarm ${i}] already happened, aborting`);
+            return;
+        }
+        console.log(`${REQ_ID} ams:${ams} tms:${tms}`);
+        console.log(`${REQ_ID} Creating alarm ${msleft}ms (${ms2hms(msleft)}) from now for alarm ${alarms[i].id}`);
+        activeAlarms[alarms[i].id] = setTimeout(function (id) {
+            console.log("RingHandler");
+        }, msleft);
+    }
+}
+function ms2hms (ms) {
+    ms = Math.floor(ms / 1000);
+    var h = Math.floor(ms / 3600);
+    ms %= 3600;
+    var m = Math.floor(ms / 60);
+    ms %= 60;
+    var s = ms;
+    return h + ";" + m + ";" + s;
+}
