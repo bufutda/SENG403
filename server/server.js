@@ -6,11 +6,12 @@ global.key = fs.readFileSync("/etc/apache2/ssl/watz_d.key");
 global.cert = fs.readFileSync("/etc/apache2/ssl/watz.crt");
 global.port = 6969;
 var alarms = [];
+var ccount = 1;
 
 console.log("Creating server...");
 var server = https.createServer({key: global.key, cert: global.cert}, function (request, response) {
     var REQ_ID = new Date().getTime();
-    REQ_ID = "\x1b[38;5;" + (REQ_ID % 200) + "m" + REQ_ID.toString(16) + "\x1b[0m";
+    REQ_ID = "\x1b[38;5;" + (ccount++ % 200) + "m" + REQ_ID.toString(16) + "\x1b[0m";
     console.log(`${REQ_ID} New request`);
 
     response.setHeader("Content-Type", "application/json; charset=utf-8");
@@ -82,6 +83,7 @@ var server = https.createServer({key: global.key, cert: global.cert}, function (
                                 6: false
                             };
                             var audioPath = false;
+                            var id = false;
                             if (typeof postedData.alarms[i] === "object") {
                                 for (var p in postedData.alarms[i]) {
                                     if (!valid) {
@@ -134,6 +136,15 @@ var server = https.createServer({key: global.key, cert: global.cert}, function (
                                                 valid = false;
                                             }
                                             break;
+                                        case "id":
+                                            if (id) {
+                                                valid = false;
+                                            } else if (typeof postedData.alarms[i].id === "string") {
+                                                id = true;
+                                            } else {
+                                                valid = false;
+                                            }
+                                            break;
                                         default:
                                             valid = false;
                                             break;
@@ -142,14 +153,16 @@ var server = https.createServer({key: global.key, cert: global.cert}, function (
                             } else {
                                 valid = false;
                             }
-                            if (valid && (!time || !repeatO || !audioPath)) {
+                            if (valid && (!time || !repeatO || !audioPath || !id)) {
                                 valid = false;
                             }
-                            console.log(`${REQ_ID} validation at ${i}:`, valid, time, repeatO, audioPath);
+                            console.log(`${REQ_ID} validation at ${i}:`, valid, time, repeatO, audioPath, id);
                         }
                     }
                     if (valid) {
                         console.log(`${REQ_ID} data is valid`);
+                        console.log(`${REQ_ID} saving alarms`);
+                        alarms = postedData.alarms;
                         console.log(`${REQ_ID} terminating...`);
                         response.end(JSON.stringify({error: false, message: null}));
                     } else {

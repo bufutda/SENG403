@@ -3,9 +3,10 @@
     if (!window.hasOwnProperty("g")) {
         window.g = {};
     }
-    window.g.Alarm = function (clockTime, repeat, audio, elem, index) {
+    window.g.Alarm = function (clockTime, repeat, audio, elem, index, id) {
         var self = this;
         self.elem = elem;
+        self.id = id;
         self.index = index;
         self.alarmTime = {
             h: clockTime.h + (clockTime.n ? 12 : 0),
@@ -58,6 +59,7 @@
             }
             self.elem.remove();
             window.g.alarms.splice(self.index, 1);
+            window.g.uploadAlarms();
             delete this;
         };
 
@@ -138,7 +140,8 @@
             return {
                 time: self.alarmTime,
                 repeat: self.repeat,
-                audioPath: self.audioPath
+                audioPath: self.audioPath,
+                id: self.id
             };
         };
 
