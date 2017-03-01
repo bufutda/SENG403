@@ -9,6 +9,10 @@ global.port = 6969;
 var alarms = [];
 var activeAlarms = {};
 var ccount = 1;
+var timezoneOffset = -420;
+var increaseTime = 0;
+var snoozeTime = 30000;
+var displayMode = true;
 
 console.log("Creating https server");
 var server = https.createServer({key: global.key, cert: global.cert}, function (request, response) {
@@ -136,6 +140,20 @@ wss.on("connection", function (ws) {
                     }
                 });
                 break;
+            case "TZ":
+                updateTimezone(parseInt(arg, 10), CON_ID);
+                updateAlarms(CON_ID);
+                break;
+            case "INCREASE":
+                increaseTime = parseInt(arg, 10);
+                updateAlarms(CON_ID);
+                break;
+            case "SETSNOOZE":
+                snoozeTime = parseInt(arg, 10);
+                break;
+            case "MODE":
+                displayMode = arg === "true" ? true : false;
+                break;
             default:
                 console.warn(`${CON_ID} Invalid command: ${command}`);
                 send("ERROR 600 Invalid command: " + command);
@@ -146,6 +164,7 @@ wss.on("connection", function (ws) {
         console.log(`${CON_ID} Closing connection`);
     });
     send("ALARM " + JSON.stringify(alarms));
+    send("CONF " + JSON.stringify({tz: timezoneOffset, incr: increaseTime, snooze: snoozeTime, mode: displayMode}));
 });
 
 function updateAlarms (REQ_ID) {
@@ -158,8 +177,8 @@ function updateAlarms (REQ_ID) {
     for (var i = 0; i < alarms.length; i++) {
         console.log(`${REQ_ID} [ActiveAlarm ${i}] parsing...`);
         var ams = ((alarms[i].time.h * 3600) + (alarms[i].time.m * 60) + alarms[i].time.s) * 1000;
-        var now = new Date();
-        var tms = ((now.getHours() * 3600) + (now.getMinutes() * 60) + now.getSeconds()) * 1000;
+        var now = new Date((Date.now() + (timezoneOffset * 60 * 1000)) + increaseTime);
+        var tms = ((now.getUTCHours() * 3600) + (now.getUTCMinutes() * 60) + now.getUTCSeconds()) * 1000;
 
         var msleft;
         if (ams < tms) {
@@ -175,9 +194,9 @@ function updateAlarms (REQ_ID) {
         }
         console.log(`${REQ_ID} [ActiveAlarm ${i}] ams:${ams} tms:${tms}`);
         console.log(`${REQ_ID} [ActiveAlarm ${i}] Creating alarm ${msleft}ms (${ms2hms(msleft)}) from now for alarm ${alarms[i].id}`);
-        activeAlarms[alarms[i].id] = setTimeout(function (id) {
-            console.log("RingHandler");
-        }, msleft);
+        activeAlarms[alarms[i].id] = setTimeout(function (alarm) {
+            console.log(`AL-${alarm.id} RingHandler`);
+        }, msleft + 2000, alarms[i]);
     }
 }
 function ms2hms (ms) {
@@ -200,7 +219,7 @@ function parsePostData (postedData, ID, clbk) {
                     break;
                 case "tz":
                     console.log(`${ID} timezone change detected`);
-                    console.log(`${ID} TODO: change timezone`);
+                    updateTimezone(postedData.tz, ID);
                     break;
                 default:
                     console.log(`${ID} unknown setting: ${prop}`);
@@ -304,4 +323,8 @@ function parsePostData (postedData, ID, clbk) {
     }
     clbk(false);
     return;
+}
+
+function updateTimezone (tzo, ID) {
+    timezoneOffset = tzo;
 }

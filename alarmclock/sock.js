@@ -52,6 +52,15 @@
                         }, document.querySelector("#musicSelect select").value, alarmElem, window.g.alarms.length, data[i].id));
                     }
                     break;
+                case "CONF":
+                    var d = JSON.parse(msg.join(" "));
+                    window.g.timezone = d.tz;
+                    window.g.increaseTime = d.incr;
+                    window.g.snoozeAmount = d.snooze;
+                    window.g.displayMode = d.mode;
+                    document.querySelector("#timezoneSettingW select").value = window.g.timezone.toString();
+                    document.querySelector("#snoozeSettingW select").value = window.g.snoozeAmount.toString();
+                    break;
                 case "ERROR":
                     console.error("[WS] ERROR: " + msg.join(" "));
                     break;

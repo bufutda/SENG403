@@ -313,10 +313,57 @@
                     <div class="settingSwitchW" id="snoozeSettingW">
                         <span class="centerY">Snooze Time:</span>
                         <div class="nice-select">
-                            <select onchange="javascript:window.g.snoozeAmount = parseInt(document.querySelector('#snoozeSettingW select').value, 10);">
+                            <select onchange="javascript:window.g.snoozeAmount = parseInt(document.querySelector('#snoozeSettingW select').value, 10); window.g.sock.send('SETSNOOZE ' + window.g.snoozeAmount);">
                                 <option value="30000">30 Seconds</option>
                                 <option value="60000">1 Minute</option>
                                 <option value="300000">5 Minutes</option>
+                            </select>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="settingSwitchW" id="timezoneSettingW">
+                        <span class="centerY">Timezone:</span>
+                        <div class="nice-select">
+                            <select onchange="javascript:window.g.changeTimezone(parseInt(document.querySelector('#timezoneSettingW select').value, 10));">
+                                <option value="-720">UTC-12:00 Y</option>
+                                <option value="-660">UTC-11:00 X</option>
+                                <option value="-600">UTC-10:00 W</option>
+                                <option value="-570">UTC-09:30 V†</option>
+                                <option value="-540">UTC-09:00 V</option>
+                                <option value="-480">UTC-08:00 U</option>
+                                <option value="-420">UTC-07:00 T</option>
+                                <option value="-360">UTC-06:00 S</option>
+                                <option value="-300">UTC-05:00 R</option>
+                                <option value="-240">UTC-04:00 Q</option>
+                                <option value="-210">UTC-03:30 P†</option>
+                                <option value="-180">UTC-03:00 P</option>
+                                <option value="-120">UTC-02:00 O</option>
+                                <option value="-60">UTC-01:00 N</option>
+                                <option value="0">UTC±00:00 Z</option>
+                                <option value="60">UTC+01:00 A</option>
+                                <option value="120">UTC+02:00 B</option>
+                                <option value="180">UTC+03:00 C</option>
+                                <option value="210">UTC+03:30 C†</option>
+                                <option value="240">UTC+04:00 D</option>
+                                <option value="270">UTC+04:30 D†</option>
+                                <option value="300">UTC+05:00 E</option>
+                                <option value="330">UTC+05:30 E†</option>
+                                <option value="345">UTC+05:45 E*</option>
+                                <option value="360">UTC+06:00 F</option>
+                                <option value="390">UTC+06:30 F†</option>
+                                <option value="420">UTC+07:00 G</option>
+                                <option value="480">UTC+08:00 H</option>
+                                <option value="510">UTC+08:30 H†</option>
+                                <option value="525">UTC+08:45 H*</option>
+                                <option value="540">UTC+09:00 I</option>
+                                <option value="570">UTC+09:30 I†</option>
+                                <option value="600">UTC+10:00 K</option>
+                                <option value="630">UTC+10:30 K†</option>
+                                <option value="660">UTC+11:00 L</option>
+                                <option value="720">UTC+12:00 M</option>
+                                <option value="765">UTC+12:45 M*</option>
+                                <option value="780">UTC+13:00 M†</option>
+                                <option value="840">UTC+14:00 M‡</option>
                             </select>
                         </div>
                     </div>

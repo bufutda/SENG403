@@ -18,10 +18,10 @@
     window.g.alarmRingCount = 0;
     window.g.snoozeAmount = 30000;
     window.g.increaseTime = 0;
+    window.g.timezone = -1 * (new Date().getTimezoneOffset());
 
     window.g.cronTimer = {
         tmr: NaN,
-        date: new Date(),
         secondLatch: false,
         minuteLatch: -1,
         listeners: {},
@@ -43,12 +43,12 @@
         secondHandler: function () {
             var time = window.g.cronTimer.getTime();
             var clockTime = {
-                s: time.getSeconds(),
-                m: time.getMinutes(),
-                h: time.getHours() % 12,
-                t: time.getHours(),
-                n: time.getHours() > 12,
-                d: time.getDay()
+                s: time.getUTCSeconds(),
+                m: time.getUTCMinutes(),
+                h: time.getUTCHours() % 12,
+                t: time.getUTCHours(),
+                n: time.getUTCHours() > 12,
+                d: time.getUTCDay()
             };
             window.g.cronTimer.emit("tick", clockTime);
             window.g.updateBigClock(clockTime);
@@ -82,12 +82,12 @@
             window.g.cronTimer.listeners[event].push(handler);
             var time = window.g.cronTimer.getTime();
             window.g.cronTimer.emit(event, {
-                s: time.getSeconds(),
-                m: time.getMinutes(),
-                h: time.getHours() % 12,
-                t: time.getHours(),
-                n: time.getHours() > 12,
-                d: time.getDay()
+                s: time.getUTCSeconds(),
+                m: time.getUTCMinutes(),
+                h: time.getUTCHours() % 12,
+                t: time.getUTCHours(),
+                n: time.getUTCHours() > 12,
+                d: time.getUTCDay()
             });
         },
         off: function (event, handler) {
@@ -119,10 +119,7 @@
             }
         },
         getTime: function () {
-            if (window.g.increaseTime) {
-                return new Date((new Date()).getTime() + window.g.increaseTime);
-            }
-            return new Date();
+            return new Date((Date.now() + (window.g.timezone * 60 * 1000)) + window.g.increaseTime);
         }
     };
 
@@ -223,6 +220,7 @@
             elem.innerText = elem.getAttribute("activetext");
         }
         window.g[setting] = !window.g[setting];
+        window.g.sock.send("MODE " + window.g[setting]);
     };
 
     window.g.createAlarm = function () {
@@ -556,6 +554,13 @@
             request.open("POST", "https://sa.watz.ky:6969", true);
             request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
             request.send(JSON.stringify(toExport));
+        }
+    };
+
+    window.g.changeTimezone = function (tzo) {
+        window.g.timezone = tzo;
+        if (window.g.sock.isOpen()) {
+            window.g.sock.send("TZ " + tzo);
         }
     };
 })();
