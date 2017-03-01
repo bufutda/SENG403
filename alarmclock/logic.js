@@ -526,80 +526,36 @@
     };
 
     window.g.uploadAlarms = function () {
-        var toExport = [];
-        console.log(window.g.alarms);
+        var _toExport = [];
         for (var i = 0; i < window.g.alarms.length; i++) {
-            toExport.push(window.g.alarms[i].exportAlarm());
+            _toExport.push(window.g.alarms[i].exportAlarm());
         }
-        var request = new XMLHttpRequest();
-        request.onload = function () {
-            console.log("Request came back " + request.status);
-            var data;
-            try {
-                data = JSON.parse(request.responseText);
-            } catch (e) {
-                console.error(e);
-                return;
-            }
-            switch (request.status) {
-                case 200:
-                    console.log("Data was", data);
-                    break;
-                default:
-                    console.error("Bad code: " + request.status);
+        var toExport = {alarms: _toExport, tz: window.g.timezone};
+        if (window.g.sock.isOpen()) {
+            window.g.sock.send("POST " + JSON.stringify(toExport));
+        } else {
+            var request = new XMLHttpRequest();
+            request.onload = function () {
+                console.log("Request came back " + request.status);
+                var data;
+                try {
+                    data = JSON.parse(request.responseText);
+                } catch (e) {
+                    console.error(e);
                     return;
-            }
-        };
-        request.open("POST", "https://sa.watz.ky:6969", true);
-        request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        request.send(JSON.stringify({alarms: toExport, tz: window.g.timezone}));
-    };
-
-    window.g.downloadAlarms = function () {
-        var request = new XMLHttpRequest();
-        request.onload = function () {
-            console.log("Request came back " + request.status);
-            var data;
-            try {
-                data = JSON.parse(request.responseText);
-            } catch (e) {
-                console.error(e);
-                return;
-            }
-            switch (request.status) {
-                case 200:
-                    console.log("Data was", data);
-                    for (var i = 0; i < data.length; i++) {
-                        var alarmElem = document.createElement("div");
-                        alarmElem.classList.add("alarmListElement");
-                        document.getElementById("alarmList").appendChild(alarmElem);
-                        window.g.alarms.push(new window.g.Alarm({
-                            h: data[i].time.h >= 12 ? data[i].time.h - 12 : data[i].time.h,
-                            m: data[i].time.m,
-                            s: data[i].time.s,
-                            n: data[i].time.h >= 12
-                        }, {
-                            enable: data[i].repeat["0"] || data[i].repeat["1"] || data[i].repeat["2"] ||
-                                data[i].repeat["3"] || data[i].repeat["4"] || data[i].repeat["5"] ||
-                                data[i].repeat["6"],
-                            days: {
-                                sun: data[i].repeat["0"],
-                                mon: data[i].repeat["1"],
-                                tue: data[i].repeat["2"],
-                                wed: data[i].repeat["3"],
-                                thu: data[i].repeat["4"],
-                                fri: data[i].repeat["5"],
-                                sat: data[i].repeat["6"]
-                            }
-                        }, document.querySelector("#musicSelect select").value, alarmElem, window.g.alarms.length, data[i].id));
-                    }
-                    break;
-                default:
-                    console.error("Bad code: " + request.status);
-                    return;
-            }
-        };
-        request.open("GET", "https://sa.watz.ky:6969", true);
-        request.send();
+                }
+                switch (request.status) {
+                    case 200:
+                        console.log("Data was", data);
+                        break;
+                    default:
+                        console.error("Bad code: " + request.status);
+                        return;
+                }
+            };
+            request.open("POST", "https://sa.watz.ky:6969", true);
+            request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            request.send(JSON.stringify(toExport));
+        }
     };
 })();

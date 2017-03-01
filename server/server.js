@@ -1,7 +1,7 @@
 "use strict";
 var https = require("https");
 var fs = require("fs");
-var wss = require("ws");
+var WebSocketServer = require("ws").Server;
 
 global.key = fs.readFileSync("/etc/apache2/ssl/watz_d.key");
 global.cert = fs.readFileSync("/etc/apache2/ssl/watz.crt");
@@ -10,10 +10,10 @@ var alarms = [];
 var activeAlarms = {};
 var ccount = 1;
 
-console.log("Creating server...");
+console.log("Creating https server");
 var server = https.createServer({key: global.key, cert: global.cert}, function (request, response) {
-    var REQ_ID = new Date().getTime();
-    REQ_ID = "\x1b[38;5;" + (ccount++ % 200) + "m" + REQ_ID.toString(16) + "\x1b[0m";
+    var REQ_ID = Math.floor(Math.random() * 100000000000);
+    REQ_ID = "\x1b[38;5;" + (ccount++ % 200) + "mHTTPS-" + REQ_ID.toString(16) + "\x1b[0m";
     console.log(`${REQ_ID} New request`);
 
     response.setHeader("Content-Type", "application/json; charset=utf-8");
@@ -53,114 +53,7 @@ var server = https.createServer({key: global.key, cert: global.cert}, function (
                     request.connection.destroy();
                     return;
                 }
-                var valid = true;
-                if (typeof postedData === "object") {
-                    console.log(`${REQ_ID} checking for extraneous settings`);
-                    for (var prop in postedData) {
-                        switch (prop) {
-                            case "alarms":
-                                break;
-                            case "tz":
-                                console.log(`${REQ_ID} timezone change detected`);
-                                console.log(`${REQ_ID} TODO: change timezone`);
-                                break;
-                            default:
-                                console.log(`${REQ_ID} unknown setting: ${prop}`);
-                        }
-                    }
-                    console.log(`${REQ_ID} validating alarms...`);
-                    if (!postedData.hasOwnProperty("alarms") || !(postedData.alarms instanceof Array)) {
-                        valid = false;
-                    } else {
-                        for (var i = 0; i < postedData.alarms.length && valid; i++) {
-                            var time = false;
-                            var repeatO = false;
-                            var repeat = {
-                                0: false,
-                                1: false,
-                                2: false,
-                                3: false,
-                                4: false,
-                                5: false,
-                                6: false
-                            };
-                            var audioPath = false;
-                            var id = false;
-                            if (typeof postedData.alarms[i] === "object") {
-                                for (var p in postedData.alarms[i]) {
-                                    if (!valid) {
-                                        break;
-                                    }
-                                    switch (p) {
-                                        case "time":
-                                            if (time) {
-                                                valid = false;
-                                            } else if (typeof postedData.alarms[i].time === "object") {
-                                                if (postedData.alarms[i].time.hasOwnProperty("h") && typeof postedData.alarms[i].time.h === "number" &&
-                                                    postedData.alarms[i].time.hasOwnProperty("m") && typeof postedData.alarms[i].time.m === "number" &&
-                                                    postedData.alarms[i].time.hasOwnProperty("s") && typeof postedData.alarms[i].time.h === "number") {
-                                                    time = true;
-                                                } else {
-                                                    valid = false;
-                                                }
-                                            } else {
-                                                valid = false;
-                                            }
-                                            break;
-                                        case "audioPath":
-                                            if (audioPath) {
-                                                valid = false;
-                                            } else if (typeof postedData.alarms[i].audioPath === "string") {
-                                                audioPath = true;
-                                            } else {
-                                                valid = false;
-                                            }
-                                            break;
-                                        case "repeat":
-                                            if (repeatO) {
-                                                valid = false;
-                                            } else if (typeof postedData.alarms[i].repeat === "object") {
-                                                var repeatV = true;
-                                                for (var j = 0; j < 7; j++) {
-                                                    if (postedData.alarms[i].repeat.hasOwnProperty(j) && typeof postedData.alarms[i].repeat[j] === "boolean") {
-                                                        repeat[j] = true;
-                                                    } else {
-                                                        repeatV = false;
-                                                        break;
-                                                    }
-                                                }
-                                                if (!repeatV) {
-                                                    valid = false;
-                                                } else {
-                                                    repeatO = true;
-                                                }
-                                            } else {
-                                                valid = false;
-                                            }
-                                            break;
-                                        case "id":
-                                            if (id) {
-                                                valid = false;
-                                            } else if (typeof postedData.alarms[i].id === "string") {
-                                                id = true;
-                                            } else {
-                                                valid = false;
-                                            }
-                                            break;
-                                        default:
-                                            valid = false;
-                                            break;
-                                    }
-                                }
-                            } else {
-                                valid = false;
-                            }
-                            if (valid && (!time || !repeatO || !audioPath || !id)) {
-                                valid = false;
-                            }
-                            console.log(`${REQ_ID} validation at ${i}:`, valid, time, repeatO, audioPath, id);
-                        }
-                    }
+                parsePostData(postedData, REQ_ID, function (valid) {
                     if (valid) {
                         console.log(`${REQ_ID} data is valid`);
                         console.log(`${REQ_ID} saving alarms`);
@@ -174,12 +67,7 @@ var server = https.createServer({key: global.key, cert: global.cert}, function (
                         request.connection.destroy();
                         return;
                     }
-                    return;
-                }
-                console.log(`${REQ_ID} bad data, terminating...`);
-                response.writeHead(400, {"Content-Type": "text/plain"});
-                request.connection.destroy();
-                return;
+                });
             });
             break;
         case "OPTIONS":
@@ -202,6 +90,62 @@ server.listen(global.port, function (e) {
         throw e;
     }
     console.log("Listening on " + global.port);
+});
+
+console.log("Creating WS server");
+var wss = new WebSocketServer({server: server});
+wss.on("connection", function (ws) {
+    const _CON_ID = Math.floor(Math.random() * 100000000).toString(16);
+    const CON_ID = "\x1b[38;5;" + (ccount++ % 200) + "mWS-" + _CON_ID + "\x1b[0m";
+    console.log(`${CON_ID} New WSS connection`);
+    function send (msg) {
+        console.log(`${CON_ID} [OUTGOING] ${msg}`);
+        ws.send(msg, function (e) {
+            if (e) {
+                console.error(`${CON_ID} send error`);
+                console.error(e);
+            }
+        });
+    }
+    ws.on("message", function (message) {
+        console.log(`${CON_ID} [INCOMING] ${message}`);
+        var msg = message.split(" ");
+        var command = msg[0];
+        msg.splice(0, 1);
+        var arg = msg.join(" ");
+        switch (command) {
+            case "POST":
+                var data;
+                try {
+                    data = JSON.parse(arg);
+                } catch (e) {
+                    console.log(`${CON_ID} bad json`);
+                    send("ERROR 601 Bad JSON");
+                    return;
+                }
+                parsePostData(data, CON_ID, function (valid) {
+                    if (valid) {
+                        console.log(`${CON_ID} data is valid`);
+                        console.log(`${CON_ID} saving alarms`);
+                        alarms = data.alarms;
+                        updateAlarms(CON_ID);
+                    } else {
+                        console.log(`${CON_ID} bad data, terminating...`);
+                        send("ERROR 602 Bad Data");
+                        return;
+                    }
+                });
+                break;
+            default:
+                console.warn(`${CON_ID} Invalid command: ${command}`);
+                send("ERROR 600 Invalid command: " + command);
+                return;
+        }
+    });
+    ws.on("close", function (msg) {
+        console.log(`${CON_ID} Closing connection`);
+    });
+    send("ALARM " + JSON.stringify(alarms));
 });
 
 function updateAlarms (REQ_ID) {
@@ -229,8 +173,8 @@ function updateAlarms (REQ_ID) {
             console.log(`${REQ_ID} [ActiveAlarm ${i}] already happened, aborting`);
             return;
         }
-        console.log(`${REQ_ID} ams:${ams} tms:${tms}`);
-        console.log(`${REQ_ID} Creating alarm ${msleft}ms (${ms2hms(msleft)}) from now for alarm ${alarms[i].id}`);
+        console.log(`${REQ_ID} [ActiveAlarm ${i}] ams:${ams} tms:${tms}`);
+        console.log(`${REQ_ID} [ActiveAlarm ${i}] Creating alarm ${msleft}ms (${ms2hms(msleft)}) from now for alarm ${alarms[i].id}`);
         activeAlarms[alarms[i].id] = setTimeout(function (id) {
             console.log("RingHandler");
         }, msleft);
@@ -244,4 +188,120 @@ function ms2hms (ms) {
     ms %= 60;
     var s = ms;
     return h + ";" + m + ";" + s;
+}
+
+function parsePostData (postedData, ID, clbk) {
+    var valid = true;
+    if (typeof postedData === "object") {
+        console.log(`${ID} checking for extraneous settings`);
+        for (var prop in postedData) {
+            switch (prop) {
+                case "alarms":
+                    break;
+                case "tz":
+                    console.log(`${ID} timezone change detected`);
+                    console.log(`${ID} TODO: change timezone`);
+                    break;
+                default:
+                    console.log(`${ID} unknown setting: ${prop}`);
+            }
+        }
+        console.log(`${ID} validating alarms...`);
+        if (!postedData.hasOwnProperty("alarms") || !(postedData.alarms instanceof Array)) {
+            valid = false;
+        } else {
+            for (var i = 0; i < postedData.alarms.length && valid; i++) {
+                var time = false;
+                var repeatO = false;
+                var repeat = {
+                    0: false,
+                    1: false,
+                    2: false,
+                    3: false,
+                    4: false,
+                    5: false,
+                    6: false
+                };
+                var audioPath = false;
+                var id = false;
+                if (typeof postedData.alarms[i] === "object") {
+                    for (var p in postedData.alarms[i]) {
+                        if (!valid) {
+                            break;
+                        }
+                        switch (p) {
+                            case "time":
+                                if (time) {
+                                    valid = false;
+                                } else if (typeof postedData.alarms[i].time === "object") {
+                                    if (postedData.alarms[i].time.hasOwnProperty("h") && typeof postedData.alarms[i].time.h === "number" &&
+                                        postedData.alarms[i].time.hasOwnProperty("m") && typeof postedData.alarms[i].time.m === "number" &&
+                                        postedData.alarms[i].time.hasOwnProperty("s") && typeof postedData.alarms[i].time.h === "number") {
+                                        time = true;
+                                    } else {
+                                        valid = false;
+                                    }
+                                } else {
+                                    valid = false;
+                                }
+                                break;
+                            case "audioPath":
+                                if (audioPath) {
+                                    valid = false;
+                                } else if (typeof postedData.alarms[i].audioPath === "string") {
+                                    audioPath = true;
+                                } else {
+                                    valid = false;
+                                }
+                                break;
+                            case "repeat":
+                                if (repeatO) {
+                                    valid = false;
+                                } else if (typeof postedData.alarms[i].repeat === "object") {
+                                    var repeatV = true;
+                                    for (var j = 0; j < 7; j++) {
+                                        if (postedData.alarms[i].repeat.hasOwnProperty(j) && typeof postedData.alarms[i].repeat[j] === "boolean") {
+                                            repeat[j] = true;
+                                        } else {
+                                            repeatV = false;
+                                            break;
+                                        }
+                                    }
+                                    if (!repeatV) {
+                                        valid = false;
+                                    } else {
+                                        repeatO = true;
+                                    }
+                                } else {
+                                    valid = false;
+                                }
+                                break;
+                            case "id":
+                                if (id) {
+                                    valid = false;
+                                } else if (typeof postedData.alarms[i].id === "string") {
+                                    id = true;
+                                } else {
+                                    valid = false;
+                                }
+                                break;
+                            default:
+                                valid = false;
+                                break;
+                        }
+                    }
+                } else {
+                    valid = false;
+                }
+                if (valid && (!time || !repeatO || !audioPath || !id)) {
+                    valid = false;
+                }
+                console.log(`${ID} validation at ${i}:`, valid, time, repeatO, audioPath, id);
+            }
+        }
+        clbk(valid);
+        return;
+    }
+    clbk(false);
+    return;
 }

@@ -10,6 +10,7 @@
         <script type="text/javascript" src="/alarmclock/logic.js"></script>
         <script type="text/javascript" src="/alarmclock/alarm.js"></script>
         <script type="text/javascript" src="/alarmclock/timeConstants.js"></script>
+        <script type="text/javascript" src="/alarmclock/sock.js"></script>
         <script type="text/javascript">
             function init () {
                 var pr = window.location.search.substr(1).split("&");
@@ -38,7 +39,7 @@
                 });
 
                 window.g.cronTimer.start();
-                window.g.downloadAlarms();
+                window.g.sock.init();
             }
         </script>
     </head>
