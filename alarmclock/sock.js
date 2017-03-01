@@ -60,9 +60,13 @@
                     window.g.displayMode = d.mode;
                     document.querySelector("#timezoneSettingW select").value = window.g.timezone.toString();
                     document.querySelector("#snoozeSettingW select").value = window.g.snoozeAmount.toString();
+                    document.getElementById("textInput_email").value = d.addr;
                     break;
                 case "ERROR":
                     console.error("[WS] ERROR: " + msg.join(" "));
+                    if (msg[0] === "603") {
+                        document.getElementById("textInput_email").style.background = "#51b1c1";
+                    }
                     break;
                 default:
                     console.error("Unknown command: " + command);
@@ -70,6 +74,7 @@
         });
         window.g.sock.ws.addEventListener("close", function () {
             console.error("[WS] Connection closed");
+            document.getElementById("site").style.background = "#5b1c1c";
         });
         window.g.sock.isOpen = function () {
             return window.g.sock.init && window.g.sock.ws.readyState === window.g.sock.ws.OPEN;

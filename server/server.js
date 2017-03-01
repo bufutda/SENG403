@@ -2,6 +2,7 @@
 var https = require("https");
 var fs = require("fs");
 var WebSocketServer = require("ws").Server;
+var nodemailer = require("nodemailer");
 
 global.key = fs.readFileSync("/etc/apache2/ssl/watz_d.key");
 global.cert = fs.readFileSync("/etc/apache2/ssl/watz.crt");
@@ -13,7 +14,10 @@ var timezoneOffset = -420;
 var increaseTime = 0;
 var snoozeTime = 30000;
 var displayMode = true;
-
+var emailAddress = null;
+var clients = {
+    length: 0
+};
 console.log("Creating https server");
 var server = https.createServer({key: global.key, cert: global.cert}, function (request, response) {
     var REQ_ID = Math.floor(Math.random() * 100000000000);
@@ -102,6 +106,8 @@ wss.on("connection", function (ws) {
     const _CON_ID = Math.floor(Math.random() * 100000000).toString(16);
     const CON_ID = "\x1b[38;5;" + (ccount++ % 200) + "mWS-" + _CON_ID + "\x1b[0m";
     console.log(`${CON_ID} New WSS connection`);
+    clients[_CON_ID] = ws;
+    clients.length++;
     function send (msg) {
         console.log(`${CON_ID} [OUTGOING] ${msg}`);
         ws.send(msg, function (e) {
@@ -154,6 +160,25 @@ wss.on("connection", function (ws) {
             case "MODE":
                 displayMode = arg === "true" ? true : false;
                 break;
+            case "SNOOZE":
+                if (activeAlarms.hasOwnProperty(arg)) {
+                    clearTimeout(activeAlarms[arg]);
+                    for (var i = 0; i < alarms.length; i++) {
+                        if (alarms[i].id === arg) {
+                            console.log(`${CON_ID} Snoozing alarm ${arg}`);
+                            updateAlarm(CON_ID, alarms[i], snoozeTime);
+                            break;
+                        }
+                    }
+                }
+                break;
+            case "MAIL":
+                if (/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(arg)) {
+                    emailAddress = arg;
+                } else {
+                    send("ERROR 603 Bad Address");
+                }
+                break;
             default:
                 console.warn(`${CON_ID} Invalid command: ${command}`);
                 send("ERROR 600 Invalid command: " + command);
@@ -162,9 +187,11 @@ wss.on("connection", function (ws) {
     });
     ws.on("close", function (msg) {
         console.log(`${CON_ID} Closing connection`);
+        delete clients[_CON_ID];
+        clients.length--;
     });
     send("ALARM " + JSON.stringify(alarms));
-    send("CONF " + JSON.stringify({tz: timezoneOffset, incr: increaseTime, snooze: snoozeTime, mode: displayMode}));
+    send("CONF " + JSON.stringify({tz: timezoneOffset, incr: increaseTime, snooze: snoozeTime, mode: displayMode, addr: emailAddress}));
 });
 
 function updateAlarms (REQ_ID) {
@@ -175,12 +202,20 @@ function updateAlarms (REQ_ID) {
     }
     console.log(`${REQ_ID} ${alarms.length} to go through`);
     for (var i = 0; i < alarms.length; i++) {
-        console.log(`${REQ_ID} [ActiveAlarm ${i}] parsing...`);
-        var ams = ((alarms[i].time.h * 3600) + (alarms[i].time.m * 60) + alarms[i].time.s) * 1000;
+        updateAlarm(REQ_ID, alarms[i]);
+    }
+}
+
+function updateAlarm (REQ_ID, alarm, sn) {
+    console.log(`${REQ_ID} [ActiveAlarm ${alarm.id}] parsing...`);
+    var msleft;
+    if (sn) {
+        msleft = sn;
+    } else {
+        var ams = ((alarm.time.h * 3600) + (alarm.time.m * 60) + alarm.time.s) * 1000;
         var now = new Date((Date.now() + (timezoneOffset * 60 * 1000)) + increaseTime);
         var tms = ((now.getUTCHours() * 3600) + (now.getUTCMinutes() * 60) + now.getUTCSeconds()) * 1000;
 
-        var msleft;
         if (ams < tms) {
             // tomorrow
             msleft = (86400000 - tms) + ams;
@@ -189,16 +224,41 @@ function updateAlarms (REQ_ID) {
             var msleft = ams - tms;
         } else {
             // now...?
-            console.log(`${REQ_ID} [ActiveAlarm ${i}] already happened, aborting`);
+            console.log(`${REQ_ID} [ActiveAlarm ${alarm.id}] already happened, aborting`);
             return;
         }
-        console.log(`${REQ_ID} [ActiveAlarm ${i}] ams:${ams} tms:${tms}`);
-        console.log(`${REQ_ID} [ActiveAlarm ${i}] Creating alarm ${msleft}ms (${ms2hms(msleft)}) from now for alarm ${alarms[i].id}`);
-        activeAlarms[alarms[i].id] = setTimeout(function (alarm) {
-            console.log(`AL-${alarm.id} RingHandler`);
-        }, msleft + 2000, alarms[i]);
+        console.log(`${REQ_ID} [ActiveAlarm ${alarm.id}] ams:${ams} tms:${tms}`);
     }
+    console.log(`${REQ_ID} [ActiveAlarm ${alarm.id}] Creating alarm ${msleft}ms (${ms2hms(msleft)}) from now`);
+    activeAlarms[alarm.id] = setTimeout(function (alarm) {
+        if (clients.length !== 0) {
+            console.log(`AL-${alarm.id} [RingHandler] ${clients.length} client(s) still connected`);
+        } else {
+            console.log(`AL-${alarm.id} [RingHandler] Nobody here. Attempting to send email`);
+            if (emailAddress) {
+                console.log(`AL-${alarm.id} [RingHandler] Email sending to ${emailAddress}`);
+                var mailoptions = {
+                    from: "'Alarm' <alarm@watz.ky>",
+                    to: emailAddress,
+                    subject: "Alarm " + alarm.id + " went off",
+                    text: "Your alarm set for " + alarm.time.h + ":" + alarm.time.m + ":" + alarm.time.s + " went off.\nhttps://sa.watz.ky/alarmclock",
+                    html: "<br><strong>Your alarm set for " + alarm.time.h + ":" + alarm.time.m + ":" + alarm.time.s + " went off.</strong>\n<a href='https://sa.watz.ky/alarmclock'>https://sa.watz.ky/alarmclock</a><br>"
+                };
+                transporter.sendMail(mailoptions, function (error, info) {
+                    if (error) {
+                        console.error(`AL-${alarm.id} [RingHandler] Error sending mail`);
+                        console.error(error);
+                        return;
+                    }
+                    console.log(`AL-${alarm.id} [RingHandler] Message ${info.messageId} sent: ${info.response}`);
+                });
+            } else {
+                console.log(`AL-${alarm.id} [RingHandler] Cannot send email - none available`);
+            }
+        }
+    }, msleft + 2000, alarm);
 }
+
 function ms2hms (ms) {
     ms = Math.floor(ms / 1000);
     var h = Math.floor(ms / 3600);
@@ -328,3 +388,12 @@ function parsePostData (postedData, ID, clbk) {
 function updateTimezone (tzo, ID) {
     timezoneOffset = tzo;
 }
+
+console.log("Setting up Email");
+var transporter = nodemailer.createTransport({
+    service: "Zoho",
+    auth: {
+        user: "alarm@watz.ky",
+        pass: fs.readFileSync("/etc/apache2/ssl/clock.pwd").toString()
+    }
+});

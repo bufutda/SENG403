@@ -367,6 +367,10 @@
                             </select>
                         </div>
                     </div>
+                    <hr>
+                    <div class="settingSwitchW" id="emailSettingW">
+                        <input id="textInput_email" class="textInput centerX" type="email" placeholder="Backup Email" onchange="javascript:window.g.sock.send('MAIL ' + document.getElementById('textInput_email').value); document.getElementById('textInput_email').style.background = '';">
+                    </div>
                 </div>
                 <div id="digitalClockWrapper" class="center">
                     <div id="digitalClockModifier" class="centerX">AM</div>

@@ -112,6 +112,7 @@
             }, function () {
                 // snooze
                 alarmAudio.remove();
+                window.g.sock.send("SNOOZE " + self.id);
                 setTimeout(function () {
                     console.log("snooze over");
                     self.ring("SNOOZE for alarm: " + self.timeStr());
