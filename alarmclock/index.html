@@ -2,11 +2,14 @@
 <html>
     <head>
         <title>SENG 403 Alarm Clock</title>
-        <link rel="stylesheet" type="text/css" href="/alarmclock/stylesheet.css"/>
-        <link href="https://fonts.googleapis.com/css?family=Rajdhani" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
         <meta charset="utf-8"/>
+        <link type="text/css" href="/alarmclock/stylesheet.css" rel="stylesheet"/>
+        <link type="text/css" href="https://fonts.googleapis.com/css?family=Rajdhani" rel="stylesheet" />
+        <link type="text/css" href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet" />
         <script src="/alarmclock/resources/chrono.min.js"></script>
+        <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+        <script src="https://www.amcharts.com/lib/3/serial.js"></script>
+        <script src="https://www.amcharts.com/lib/3/themes/dark.js"></script>
         <script type="text/javascript" src="/alarmclock/logic.js"></script>
         <script type="text/javascript" src="/alarmclock/alarm.js"></script>
         <script type="text/javascript" src="/alarmclock/timeConstants.js"></script>
@@ -45,6 +48,7 @@
     </head>
     <body onload="javascript:init();">
         <div id="site">
+            <div id="visualizationCanvas"><div id="visualizationChart1"></div><div id="visualizationChart2"></div></div>
             <div id="alarmShadow"></div>
             <div id="alarmBox" class="center"></div>
             <div id="alarmSide">
@@ -305,6 +309,7 @@
             </div>
             <div id="clockSide">
                 <div id="settingsButton" onclick="javascript:window.g.settingsClick();"></div>
+                <div id="visualizeButton" onclick="javascript:window.g.visualize();"></div>
                 <div id="settings">
                     <div class="settingSwitchW">
                         <span>Display Mode:</span><div class="settingSwitchToggle settingSwitchToggleActive" id="setting_displayMode" activetext="DIGITAL" inactivetext="ANALOG" onclick="javascript:window.g.changeSetting('displayMode');"></div>

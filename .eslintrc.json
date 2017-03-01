@@ -5,6 +5,9 @@
     "env": {
         "browser": true
     },
+    "globals": {
+        "AmCharts": true
+    },
     "rules": {
         "comma-dangle": 1,
         "no-cond-assign": 1,

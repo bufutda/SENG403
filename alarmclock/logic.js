@@ -21,6 +21,8 @@
     window.g.timezone = -1 * (new Date().getTimezoneOffset());
     window.g.editing = false;
     window.g.editIndex = null;
+    window.g.visualizationLock = false;
+    window.g.visualizationTransitionLock = false;
 
     window.g.cronTimer = {
         tmr: NaN,
@@ -212,7 +214,7 @@
         }
     };
 
-    window.g.changeSetting = function (setting) {
+    window.g.changeSetting = function (setting, f) {
         var elem = document.getElementById("setting_" + setting);
         if (elem.classList.contains("settingSwitchToggleActive")) {
             elem.classList.remove("settingSwitchToggleActive");
@@ -221,8 +223,10 @@
             elem.classList.add("settingSwitchToggleActive");
             elem.innerText = elem.getAttribute("activetext");
         }
-        window.g[setting] = !window.g[setting];
-        window.g.sock.send("MODE " + window.g[setting]);
+        if (!f) {
+            window.g[setting] = !window.g[setting];
+            window.g.sock.send("MODE " + window.g[setting]);
+        }
     };
 
     window.g.createAlarm = function () {
@@ -591,5 +595,34 @@
             return {h: 12, n: false};
         }
         return {h: h, n: false};
+    };
+
+    window.g.visualize = function () {
+        if (!window.g.visualizationTransitionLock) {
+            window.g.visualizationTransitionLock = true;
+            window.g.visualizationLock = !window.g.visualizationLock;
+            var elem = document.getElementById("visualizationCanvas");
+            if (window.g.visualizationLock) {
+                console.log("Emptying chart...");
+                document.getElementById("visualizationChart1").innerHTML = "";
+                document.getElementById("visualizationChart2").innerHTML = "";
+                window.g.sock.send("VDATA");
+                elem.style.display = "block";
+                document.getElementById("visualizeButton").style.filter = "invert(25%)";
+                setTimeout(function () {
+                    elem.style.opacity = 1;
+                    setTimeout(function () {
+                        window.g.visualizationTransitionLock = false;
+                    }, 1000);
+                }, 100);
+            } else {
+                elem.style.opacity = 0;
+                document.getElementById("visualizeButton").style.filter = "invert(75%)";
+                setTimeout(function () {
+                    elem.style.display = "none";
+                    window.g.visualizationTransitionLock = false;
+                }, 1000);
+            }
+        }
     };
 })();

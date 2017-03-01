@@ -18,6 +18,10 @@ var emailAddress = null;
 var clients = {
     length: 0
 };
+var visualization = {
+    snooze: [0, 0, 0, 0, 0, 0, 0],
+    event: [0, 0, 0, 0, 0, 0, 0]
+};
 console.log("Creating https server");
 var server = https.createServer({key: global.key, cert: global.cert}, function (request, response) {
     var REQ_ID = Math.floor(Math.random() * 100000000000);
@@ -161,6 +165,8 @@ wss.on("connection", function (ws) {
                 displayMode = arg === "true" ? true : false;
                 break;
             case "SNOOZE":
+                visualization.snooze[getDay()]++;
+                console.log(`[Visualization] Snooze++ (${visualization.snooze[getDay()]})`);
                 if (activeAlarms.hasOwnProperty(arg)) {
                     clearTimeout(activeAlarms[arg]);
                     for (var i = 0; i < alarms.length; i++) {
@@ -178,6 +184,9 @@ wss.on("connection", function (ws) {
                 } else {
                     send("ERROR 603 Bad Address");
                 }
+                break;
+            case "VDATA":
+                send("VDATA " + JSON.stringify(visualization));
                 break;
             default:
                 console.warn(`${CON_ID} Invalid command: ${command}`);
@@ -231,6 +240,10 @@ function updateAlarm (REQ_ID, alarm, sn) {
     }
     console.log(`${REQ_ID} [ActiveAlarm ${alarm.id}] Creating alarm ${msleft}ms (${ms2hms(msleft)}) from now`);
     activeAlarms[alarm.id] = setTimeout(function (alarm) {
+        if (!sn) {
+            visualization.event[getDay()]++;
+            console.log(`[Visualization] Event++ (${visualization.event[getDay()]})`);
+        }
         if (clients.length !== 0) {
             console.log(`AL-${alarm.id} [RingHandler] ${clients.length} client(s) still connected`);
         } else {
@@ -251,6 +264,12 @@ function updateAlarm (REQ_ID, alarm, sn) {
                         return;
                     }
                     console.log(`AL-${alarm.id} [RingHandler] Message ${info.messageId} sent: ${info.response}`);
+                    for (var i = 0; i < alarms.length; i++) {
+                        if (alarms[i].id === alarm.id) {
+                            alarms.splice(i, 1);
+                        }
+                        break;
+                    }
                 });
             } else {
                 console.log(`AL-${alarm.id} [RingHandler] Cannot send email - none available`);
@@ -397,3 +416,7 @@ var transporter = nodemailer.createTransport({
         pass: fs.readFileSync("/etc/apache2/ssl/clock.pwd").toString()
     }
 });
+
+function getDay () {
+    return new Date((Date.now() + (timezoneOffset * 60 * 1000)) + increaseTime).getUTCDay();
+}
