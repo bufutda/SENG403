@@ -358,6 +358,7 @@ hr {
     padding: 20px;
     color: #606060;
     background-color: #1a1a1a;
+    transition: 1s;
 }
 .alarmListElement:hover {
     color: #1a1a1a;
@@ -367,6 +368,12 @@ hr {
     color: #1a1a1a;
     filter: none;
 }
+.alarmListElement:hover .alarmListElementEdit {
+    filter: invert(100%);
+}
+.alarmListElement:hover .alarmListElementEdit:hover {
+    filter: invert(50%);
+}
 .alarmListElement:hover .alarmListElementCancel:hover {
     color: #be3838;
 }
@@ -374,14 +381,28 @@ hr {
     font-size: 35px;
 }
 .alarmListElementCancel {
-    right: 20px;;
+    right: 30px;
+    top: 0;
+    position: absolute;
     color: #be3838;
     filter: grayscale(100%);
     font-size: 38px;
     cursor: pointer;
+    transition: 1s;
 }
 .alarmListElementCancel:hover {
     filter: grayscale(0);
+}
+.alarmListElementEdit {
+    right: 30px;
+    cursor: pointer;
+    position: absolute;
+    bottom: 20px;
+    transition: 1s;
+    filter: invert(50%);
+}
+.alarmListElementEdit:hover {
+    filter: invert(0);
 }
 #alarmShadow {
     position: absolute;

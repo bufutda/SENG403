@@ -19,6 +19,8 @@
     window.g.snoozeAmount = 30000;
     window.g.increaseTime = 0;
     window.g.timezone = -1 * (new Date().getTimezoneOffset());
+    window.g.editing = false;
+    window.g.editIndex = null;
 
     window.g.cronTimer = {
         tmr: NaN,
@@ -236,6 +238,9 @@
                     document.getElementById("createButton").style.opacity = 1;
                 }, 100);
             } else {
+                if (window.g.editing) {
+                    window.g.editing = false;
+                }
                 document.getElementById("newAlarm").innerHTML = "Create Alarm &oplus;";
                 document.getElementById("newAlarm").style.filter = "";
                 document.getElementById("createButton").style.opacity = 0;
@@ -363,7 +368,7 @@
                 if (parsed.d) {
                     window.g.activateRepeat(parsed.d);
                 }
-                document.querySelector("#timeSelect_hour select").value = (parsed.h >= 12 ? parsed.h - 12 : parsed.h).toString();
+                document.querySelector("#timeSelect_hour select").value = (parsed.h > 12 ? parsed.h - 12 : parsed.h).toString();
                 document.querySelector("#timeSelect_minute select").value = parsed.m.toString();
                 document.querySelector("#timeSelect_second select").value = parsed.s.toString();
                 document.querySelector("#timeSelect_modifier select").value = parsed.h >= 12 ? "pm" : "am";
@@ -435,11 +440,15 @@
         document.querySelector("#timeSelect_minute select").value = "0";
         document.querySelector("#timeSelect_second select").value = "0";
         document.querySelector("#timeSelect_modifier select").value = "am";
-        document.querySelector("#musicSelect select").value = "/alarmclock/tones/alert.ogg";
+        document.querySelector("#musicSelect select").value = "/alarmclock/tones/boobalee.ogg";
         document.getElementById("textInput_time").value = "";
     };
 
     window.g.confirmCreateAlarm = function () {
+        if (window.g.editing) {
+            window.g.editing = false;
+            window.g.alarms[window.g.editIndex].deleteHandler();
+        }
         var alarmElem = document.createElement("div");
         alarmElem.classList.add("alarmListElement");
         document.getElementById("alarmList").appendChild(alarmElem);

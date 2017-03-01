@@ -65,7 +65,7 @@
                 case "ERROR":
                     console.error("[WS] ERROR: " + msg.join(" "));
                     if (msg[0] === "603") {
-                        document.getElementById("textInput_email").style.background = "#51b1c1";
+                        document.getElementById("textInput_email").style.background = "#5b1c1c";
                     }
                     break;
                 default:

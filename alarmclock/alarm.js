@@ -128,7 +128,6 @@
 
         var cancelButton = document.createElement("div");
         cancelButton.classList.add("alarmListElementCancel");
-        cancelButton.classList.add("centerY");
         cancelButton.innerHTML = "&otimes;";
         cancelButton.addEventListener("click", function () {
             if (confirm("Are you sure you want to delete this Alarm?")) {
@@ -136,6 +135,31 @@
             }
         });
         self.elem.appendChild(cancelButton);
+
+        var editButton = document.createElement("img");
+        editButton.classList.add("alarmListElementEdit");
+        editButton.setAttribute("src", "/alarmclock/assets/edit.png");
+        editButton.addEventListener("click", function () {
+            window.g.editing = true;
+            window.g.editIndex = self.index;
+            window.g.createAlarm();
+            if (self.doRepeat) {
+                for (var prop in self.repeat) {
+                    if (self.repeat[prop]) {
+                        window.g.activateRepeat(parseInt(prop, 10));
+                    }
+                }
+            } else {
+                window.g.repeatCheck();
+            }
+            document.querySelector("#timeSelect_hour select").value = (self.alarmTime.h > 12 ? self.alarmTime.h - 12 : self.alarmTime.h).toString();
+            document.querySelector("#timeSelect_minute select").value = self.alarmTime.m.toString();
+            document.querySelector("#timeSelect_second select").value = self.alarmTime.s.toString();
+            document.querySelector("#timeSelect_modifier select").value = self.alarmTime.h >= 12 ? "pm" : "am";
+            document.querySelector("#musicSelect select").value = self.audioPath;
+            document.getElementById("textInput_time").value = "";
+        });
+        self.elem.appendChild(editButton);
 
         self.exportAlarm = function () {
             return {
