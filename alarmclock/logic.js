@@ -47,9 +47,9 @@
             var clockTime = {
                 s: time.getUTCSeconds(),
                 m: time.getUTCMinutes(),
-                h: time.getUTCHours() % 12,
+                h: window.g.c24212(time.getUTCHours()).h,
                 t: time.getUTCHours(),
-                n: time.getUTCHours() > 12,
+                n: window.g.c24212(time.getUTCHours()).n,
                 d: time.getUTCDay()
             };
             window.g.cronTimer.emit("tick", clockTime);
@@ -368,10 +368,10 @@
                 if (parsed.d) {
                     window.g.activateRepeat(parsed.d);
                 }
-                document.querySelector("#timeSelect_hour select").value = (parsed.h > 12 ? parsed.h - 12 : parsed.h).toString();
+                document.querySelector("#timeSelect_hour select").value = window.g.c24212(parsed.h).h.toString();
                 document.querySelector("#timeSelect_minute select").value = parsed.m.toString();
                 document.querySelector("#timeSelect_second select").value = parsed.s.toString();
-                document.querySelector("#timeSelect_modifier select").value = parsed.h >= 12 ? "pm" : "am";
+                document.querySelector("#timeSelect_modifier select").value = window.g.c24212(parsed.h).n ? "pm" : "am";
                 break;
             default:
                 var timeFlag = false;
@@ -406,10 +406,10 @@
                     }
                 }
                 if (timeFlag) {
-                    document.querySelector("#timeSelect_hour select").value = (time.h > 12 ? time.h - 12 : time.h).toString();
+                    document.querySelector("#timeSelect_hour select").value = window.g.c24212(time.h).h.toString();
                     document.querySelector("#timeSelect_minute select").value = time.m.toString();
                     document.querySelector("#timeSelect_second select").value = time.s.toString();
-                    document.querySelector("#timeSelect_modifier select").value = time.h >= 12 ? "pm" : "am";
+                    document.querySelector("#timeSelect_modifier select").value = window.g.c24212(time.h).n ? "pm" : "am";
                     document.getElementById("checkInput_repeat").checked = false;
                     window.g.repeatCheck();
                     if (repeatDates.length) {
@@ -571,5 +571,25 @@
         if (window.g.sock.isOpen()) {
             window.g.sock.send("TZ " + tzo);
         }
+    };
+
+    window.g.c12224 = function (h, n) {
+        if (n) {
+            return (h === 12) ? 12 : h + 12;
+        }
+        return (h === 12) ? 0 : h;
+    };
+
+    window.g.c24212 = function (h) {
+        if (h === 12) {
+            return {h: 12, n: true};
+        }
+        if (h > 12) {
+            return {h: h - 12, n: true};
+        }
+        if (h === 0) {
+            return {h: 12, n: false};
+        }
+        return {h: h, n: false};
     };
 })();

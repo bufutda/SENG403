@@ -9,7 +9,7 @@
         self.id = id;
         self.index = index;
         self.alarmTime = {
-            h: clockTime.h + (clockTime.n ? 12 : 0),
+            h: window.g.c12224(clockTime.h, clockTime.n),
             m: clockTime.m,
             s: clockTime.s
         };
@@ -40,9 +40,10 @@
         };
 
         self.timeStr = function () {
-            return (self.alarmTime.h < 10 ? "0" : "") + self.alarmTime.h + ":" +
+            var h = window.g.c24212(self.alarmTime.h).h;
+            return (h < 10 ? "0" : "") + h + ":" +
                 (self.alarmTime.m < 10 ? "0" : "") + self.alarmTime.m + ":" +
-                (self.alarmTime.s < 10 ? "0" : "") + self.alarmTime.s;
+                (self.alarmTime.s < 10 ? "0" : "") + self.alarmTime.s + (window.g.c24212(self.alarmTime.h).n ? "P" : "A") + "M";
         };
 
         self.deleteHandler = function () {

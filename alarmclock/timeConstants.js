@@ -17,35 +17,35 @@
         window.g.decreaseTime -= timeToDecrease;
     }
 
-    window.g.addMinute = function () {
-        increaseTime(dateConstants.MINUTE);
+    window.g.addMinute = function (n) {
+        increaseTime(dateConstants.MINUTE * (n ? n : 1));
     };
 
-    window.g.addHour = function () {
-        increaseTime(dateConstants.HOUR);
+    window.g.addHour = function (n) {
+        increaseTime(dateConstants.HOUR * (n ? n : 1));
     };
 
-    window.g.addDay = function () {
-        increaseTime(dateConstants.DAY);
+    window.g.addDay = function (n) {
+        increaseTime(dateConstants.DAY * (n ? n : 1));
     };
 
-    window.g.addWeek = function () {
-        increaseTime(dateConstants.WEEK);
+    window.g.addWeek = function (n) {
+        increaseTime(dateConstants.WEEK * (n ? n : 1));
     };
 
-    window.g.subMinute = function () {
-        decreaseTime(dateConstants.MINUTE);
+    window.g.subMinute = function (n) {
+        decreaseTime(dateConstants.MINUTE * (n ? n : 1));
     };
 
-    window.g.subHour = function () {
-        decreaseTime(dateConstants.HOUR);
+    window.g.subHour = function (n) {
+        decreaseTime(dateConstants.HOUR * (n ? n : 1));
     };
 
-    window.g.subDay = function () {
-        decreaseTime(dateConstants.DAY);
+    window.g.subDay = function (n) {
+        decreaseTime(dateConstants.DAY * (n ? n : 1));
     };
 
-    window.g.subWeek = function () {
-        decreaseTime(dateConstants.WEEK);
+    window.g.subWeek = function (n) {
+        decreaseTime(dateConstants.WEEK * (n ? n : 1));
     };
 })();
