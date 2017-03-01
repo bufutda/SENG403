@@ -230,49 +230,59 @@ function updateAlarm (REQ_ID, alarm, sn) {
             msleft = (86400000 - tms) + ams;
         } else if (ams > tms) {
             // soon
-            var msleft = ams - tms;
+            msleft = ams - tms;
         } else {
             // now...?
-            console.log(`${REQ_ID} [ActiveAlarm ${alarm.id}] already happened, aborting`);
+            msleft = 86400000;
             return;
         }
         console.log(`${REQ_ID} [ActiveAlarm ${alarm.id}] ams:${ams} tms:${tms}`);
     }
     console.log(`${REQ_ID} [ActiveAlarm ${alarm.id}] Creating alarm ${msleft}ms (${ms2hms(msleft)}) from now`);
     activeAlarms[alarm.id] = setTimeout(function (alarm) {
-        if (!sn) {
-            visualization.event[getDay()]++;
-            console.log(`[Visualization] Event++ (${visualization.event[getDay()]})`);
+        var allFalse = true;
+        for (var prop in alarm.repeat) {
+            if (alarm.repeat[prop]) {
+                allFalse = false;
+            }
         }
-        if (clients.length !== 0) {
-            console.log(`AL-${alarm.id} [RingHandler] ${clients.length} client(s) still connected`);
-        } else {
-            console.log(`AL-${alarm.id} [RingHandler] Nobody here. Attempting to send email`);
-            if (emailAddress) {
-                console.log(`AL-${alarm.id} [RingHandler] Email sending to ${emailAddress}`);
-                var mailoptions = {
-                    from: "'Alarm' <alarm@watz.ky>",
-                    to: emailAddress,
-                    subject: "Alarm " + alarm.id + " went off",
-                    text: "Your alarm set for " + alarm.time.h + ":" + alarm.time.m + ":" + alarm.time.s + " went off.\nhttps://sa.watz.ky/alarmclock",
-                    html: "<br><strong>Your alarm set for " + alarm.time.h + ":" + alarm.time.m + ":" + alarm.time.s + " went off.</strong>\n<a href='https://sa.watz.ky/alarmclock'>https://sa.watz.ky/alarmclock</a><br>"
-                };
-                transporter.sendMail(mailoptions, function (error, info) {
-                    if (error) {
-                        console.error(`AL-${alarm.id} [RingHandler] Error sending mail`);
-                        console.error(error);
-                        return;
-                    }
-                    console.log(`AL-${alarm.id} [RingHandler] Message ${info.messageId} sent: ${info.response}`);
-                    for (var i = 0; i < alarms.length; i++) {
-                        if (alarms[i].id === alarm.id) {
-                            alarms.splice(i, 1);
-                        }
-                        break;
-                    }
-                });
+        if (alarm.repeat[getDay()] || allFalse || sn) {
+            if (!sn) {
+                visualization.event[getDay()]++;
+                console.log(`[Visualization] Event++ (${visualization.event[getDay()]})`);
+            }
+            if (clients.length !== 0) {
+                console.log(`AL-${alarm.id} [RingHandler] ${clients.length} client(s) still connected`);
             } else {
-                console.log(`AL-${alarm.id} [RingHandler] Cannot send email - none available`);
+                console.log(`AL-${alarm.id} [RingHandler] Nobody here. Attempting to send email`);
+                if (emailAddress) {
+                    console.log(`AL-${alarm.id} [RingHandler] Email sending to ${emailAddress}`);
+                    var mailoptions = {
+                        from: "'Alarm' <alarm@watz.ky>",
+                        to: emailAddress,
+                        subject: "Alarm " + alarm.id + " went off",
+                        text: "Your alarm set for " + alarm.time.h + ":" + alarm.time.m + ":" + alarm.time.s + " went off.\nhttps://sa.watz.ky/alarmclock",
+                        html: "<br><strong>Your alarm set for " + alarm.time.h + ":" + alarm.time.m + ":" + alarm.time.s + " went off.</strong>\n<a href='https://sa.watz.ky/alarmclock'>https://sa.watz.ky/alarmclock</a><br>"
+                    };
+                    transporter.sendMail(mailoptions, function (error, info) {
+                        if (error) {
+                            console.error(`AL-${alarm.id} [RingHandler] Error sending mail`);
+                            console.error(error);
+                            return;
+                        }
+                        console.log(`AL-${alarm.id} [RingHandler] Message ${info.messageId} sent: ${info.response}`);
+                        if (allFalse) {
+                            for (var i = 0; i < alarms.length; i++) {
+                                if (alarms[i].id === alarm.id) {
+                                    alarms.splice(i, 1);
+                                }
+                                break;
+                            }
+                        }
+                    });
+                } else {
+                    console.log(`AL-${alarm.id} [RingHandler] Cannot send email - none available`);
+                }
             }
         }
     }, msleft + 2000, alarm);
