@@ -160,3 +160,56 @@ Acceptance criteria:
                 -Alarms per day
                 -Alarms per week
                 -Number of snooze activations (per day? week? an average? overall?)
+
+
+Sprint 3:
+
+-assign labels to alarms (e.g., "Take medication" for the 5pm alarm everyday or "Doctor's appointment" at 10am on Feb 10)
+As a blah,
+Estimates: 4 points
+Priority: 1
+ID: 19
+Acceptance Criteria:
+	-Can add label when creating/editing alarm
+	-Alarm is displayed with label
+	-When alarm activates, label is displayed as well
+	-Label does not disappear if alarm activates multiple times
+
+-able to set the time by moving (click and drag) analog clock hands
+As a blah,
+Estimates: 15 points
+Priority: 4
+ID: 20
+Acceptance Criteria:
+	-Hands of analog clock can be rotated via click and drag
+	-Dragging hands changes the time appropriately.
+
+-allow multiple methods to dismiss an alarm (one with sensors, one involves solving math puzzles)
+As a blah,
+Estimates: 8 points
+Priority: 2
+ID: 21
+Acceptance Criteria:
+	-When creating alarm, option exists for alternate dismissal
+	-On alarm activation, user must do some task before alarm is dismissed.
+	-Multiple tasks possible for 2nd criteria.
+
+-allow multiple devices to "register" your program. When an alarm goes off, activates on all registered devices.
+As a blah,
+Estimates: 10 points
+Priority: 3
+ID: 22
+Acceptance Criteria:
+	-Program registers users.
+	-User can have multiple active registered devices.
+	-Any alarm will activate all registered devices.
+
+-build a physical alarm with a digital display and physical buttons to control alarms with a Raspberry Pi
+As a blah,
+Estimates: 30 points
+Priority: 5
+ID: 23
+Acceptance Criteria:
+	-Program runs on Raspberry Pi.
+	-Digital display displays time, attached to Pi.
+	-Can create, edit, and dismiss alarms through the use of buttons connected to the Pi.
