@@ -3,9 +3,10 @@
     if (!window.hasOwnProperty("g")) {
         window.g = {};
     }
-    window.g.Alarm = function (clockTime, repeat, audio, elem, index, id) {
+    window.g.Alarm = function (clockTime, repeat, audio, elem, index, id, label) {
         var self = this;
         self.elem = elem;
+        self.label = label;
         self.id = id;
         self.index = index;
         self.alarmTime = {
@@ -127,6 +128,11 @@
         timeDisplay.innerText = self.timeStr() + " " + self.repeatStr();
         self.elem.appendChild(timeDisplay);
 
+        var labelDisplay = document.createElement("div");
+        labelDisplay.classList.add("alarmListElementLabel");
+        labelDisplay.innerText = self.label;
+        self.elem.appendChild(labelDisplay);
+
         var cancelButton = document.createElement("div");
         cancelButton.classList.add("alarmListElementCancel");
         cancelButton.innerHTML = "&otimes;";
@@ -167,7 +173,8 @@
                 time: self.alarmTime,
                 repeat: self.repeat,
                 audioPath: self.audioPath,
-                id: self.id
+                id: self.id,
+                label: self.label
             };
         };
 

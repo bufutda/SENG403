@@ -346,16 +346,26 @@ hr {
 }
 #musicSelect {
     width: 150px;
+    position: absolute;
+    left: 46px;
 }
 #audioW {
     font-variant: super;
-    text-align: center;
+    text-align: left;
+    width: 50%;
 }
 #audioTextW {
   display: inline-block;
   width: 120px;
   height: 33px;
+  font-size: 18px;
   position: relative;
+}
+#labelW {
+    width: 40%;
+    right: 0;
+    height: 38px;
+    position: absolute;
 }
 #repeatW {
     text-align: center;
@@ -500,4 +510,8 @@ hr {
     right: 0;
     top: 0;
     bottom: 0;
+}
+.alarmListElementLabel {
+    position: absolute;
+    top: 10px;
 }

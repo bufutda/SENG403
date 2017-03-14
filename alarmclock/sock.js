@@ -49,7 +49,7 @@
                                 fri: data[i].repeat["5"],
                                 sat: data[i].repeat["6"]
                             }
-                        }, document.querySelector("#musicSelect select").value, alarmElem, window.g.alarms.length, data[i].id));
+                        }, document.querySelector("#musicSelect select").value, alarmElem, window.g.alarms.length, data[i].id, data[i].label));
                     }
                     break;
                 case "CONF":

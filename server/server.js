@@ -336,6 +336,7 @@ function parsePostData (postedData, ID, clbk) {
                 };
                 var audioPath = false;
                 var id = false;
+                var label = false;
                 if (typeof postedData.alarms[i] === "object") {
                     for (var p in postedData.alarms[i]) {
                         if (!valid) {
@@ -397,6 +398,11 @@ function parsePostData (postedData, ID, clbk) {
                                     valid = false;
                                 }
                                 break;
+                            case "label":
+                                if (typeof postedData.alarms[i].id === "string") {
+                                    label = true;
+                                }
+                                break;
                             default:
                                 valid = false;
                                 break;
@@ -405,10 +411,10 @@ function parsePostData (postedData, ID, clbk) {
                 } else {
                     valid = false;
                 }
-                if (valid && (!time || !repeatO || !audioPath || !id)) {
+                if (valid && (!time || !repeatO || !audioPath || !id || !label)) {
                     valid = false;
                 }
-                console.log(`${ID} validation at ${i}:`, valid, time, repeatO, audioPath, id);
+                console.log(`${ID} validation at ${i}:`, valid, time, repeatO, audioPath, id, label);
             }
         }
         clbk(valid);

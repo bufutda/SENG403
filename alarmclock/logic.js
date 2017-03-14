@@ -472,7 +472,7 @@
                 fri: document.getElementById("checkInput_friday").checked,
                 sat: document.getElementById("checkInput_saturday").checked
             }
-        }, document.querySelector("#musicSelect select").value, alarmElem, window.g.alarms.length, Math.floor(Math.random() * 100000000).toString(16) + "-" + Math.floor(Math.random() * 100000000).toString(16)));
+        }, document.querySelector("#musicSelect select").value, alarmElem, window.g.alarms.length, Math.floor(Math.random() * 100000000).toString(16) + "-" + Math.floor(Math.random() * 100000000).toString(16), document.getElementById("textInput_label").value));
         window.g.uploadAlarms();
         window.g.createAlarm();
     };
