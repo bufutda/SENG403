@@ -178,6 +178,9 @@ wss.on("connection", function (ws) {
                     }
                 }
                 break;
+            case "FUDGE":
+                visualization = JSON.parse(arg);
+                break;
             case "MAIL":
                 if (/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(arg)) {
                     emailAddress = arg;
@@ -274,6 +277,7 @@ function updateAlarm (REQ_ID, alarm, sn) {
                         if (allFalse) {
                             for (var i = 0; i < alarms.length; i++) {
                                 if (alarms[i].id === alarm.id) {
+                                    console.log(`${alarms[i].id} Deleting Alarm`);
                                     alarms.splice(i, 1);
                                 }
                                 break;
@@ -285,7 +289,7 @@ function updateAlarm (REQ_ID, alarm, sn) {
                 }
             }
         }
-    }, msleft + 2000, alarm);
+    }, msleft, alarm);
 }
 
 function ms2hms (ms) {

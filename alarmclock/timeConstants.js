@@ -11,10 +11,12 @@
 
     function increaseTime (timeToIncrease) {
         window.g.increaseTime += timeToIncrease;
+        window.g.sock.send("INCREASE " + window.g.increaseTime);
     }
 
     function decreaseTime (timeToDecrease) {
-        window.g.decreaseTime -= timeToDecrease;
+        window.g.increaseTime -= timeToDecrease;
+        window.g.sock.send("INCREASE " + window.g.increaseTime);
     }
 
     window.g.addMinute = function (n) {
