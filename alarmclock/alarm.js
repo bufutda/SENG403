@@ -69,7 +69,7 @@
             if (clockTime.s >= self.alarmTime.s) {
                 self.tickListening = false;
                 window.g.cronTimer.off("tick", self.tickListener);
-                self.ring("It is now " + self.timeStr());
+                self.ring(self.generateAlarmMsg());
             }
         };
 
@@ -78,7 +78,7 @@
                 self.minuteListening = false;
                 window.g.cronTimer.off("minute", self.minuteListener);
                 if (self.alarmTime.s === 0) {
-                    self.ring("It is now " + self.timeStr());
+                    self.ring(self.generateAlarmMsg());
                 } else {
                     self.tickListening = true;
                     window.g.cronTimer.on("tick", self.tickListener);
@@ -117,7 +117,7 @@
                 window.g.sock.send("SNOOZE " + self.id);
                 setTimeout(function () {
                     console.log("snooze over");
-                    self.ring("SNOOZE for alarm: " + self.timeStr());
+                    self.ring(self.generateAlarmMsg());
                 }, window.g.snoozeAmount);
             });
         };
@@ -164,6 +164,7 @@
             document.querySelector("#timeSelect_second select").value = self.alarmTime.s.toString();
             document.querySelector("#timeSelect_modifier select").value = self.alarmTime.h >= 12 ? "pm" : "am";
             document.querySelector("#musicSelect select").value = self.audioPath;
+            document.getElementById("textInput_label").value = self.label;
             document.getElementById("textInput_time").value = "";
         });
         self.elem.appendChild(editButton);
@@ -176,6 +177,13 @@
                 id: self.id,
                 label: self.label
             };
+        };
+
+        self.generateAlarmMsg = function () {
+            if (self.label.length) {
+                return self.label;
+            }
+            return "It is now " + self.timeStr();
         };
 
         self.setTimer();

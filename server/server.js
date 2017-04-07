@@ -264,8 +264,8 @@ function updateAlarm (REQ_ID, alarm, sn) {
                         from: "'Alarm' <alarm@watz.ky>",
                         to: emailAddress,
                         subject: "Alarm " + alarm.id + " went off",
-                        text: "Your alarm set for " + alarm.time.h + ":" + alarm.time.m + ":" + alarm.time.s + " went off.\nhttps://sa.watz.ky/alarmclock",
-                        html: "<br><strong>Your alarm set for " + alarm.time.h + ":" + alarm.time.m + ":" + alarm.time.s + " went off.</strong>\n<a href='https://sa.watz.ky/alarmclock'>https://sa.watz.ky/alarmclock</a><br>"
+                        text: "Your alarm set for " + alarm.time.h + ":" + alarm.time.m + ":" + alarm.time.s + " went off." + (alarm.label.length ? "\"" + alarm.label + "\"" : "") + "\nhttps://sa.watz.ky/alarmclock",
+                        html: "<br><strong>Your alarm set for " + alarm.time.h + ":" + alarm.time.m + ":" + alarm.time.s + " went off." + (alarm.label.length ? "\"" + alarm.label + "\"" : "") + "</strong>\n<a href='https://sa.watz.ky/alarmclock'>https://sa.watz.ky/alarmclock</a><br>"
                     };
                     transporter.sendMail(mailoptions, function (error, info) {
                         if (error) {
