@@ -29,7 +29,7 @@
         "no-unexpected-multiline": 1,
         "no-unreachable": 2,
         "valid-typeof": 2,
-        "valid-jsdoc": 0,
+        "valid-jsdoc": 1,
 
         "curly": 1,
         "dot-notation": 1,
