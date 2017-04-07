@@ -1,23 +1,45 @@
+// This file contains information concerning the connection and communication
+// logic between the client and server
 (function () {
     "use strict";
+    // if this is the first file to define window.g, do so
+    // otherwise, add to other files
     if (!window.hasOwnProperty("g")) {
         window.g = {};
     }
+
+    // window.g.sock will hold all methods and variables concerning the socket
     window.g.sock = {};
+
+    // if the socket has been initialized
     window.g.sock.init = false;
+
+    /**
+     * Initialize the socket
+     * @returns {undefined}
+     */
     window.g.sock.init = function () {
+        // create the socket
         window.g.sock.ws = new WebSocket("wss://sa.watz.ky:6969");
+
+        // fires when the socket is opened
         window.g.sock.ws.addEventListener("open", function () {
             console.log("[WS] Opened");
             window.g.sock.init = true;
         });
+
+        // fires whenever a message is received from the server
         window.g.sock.ws.addEventListener("message", function (message) {
             console.log("[WS] [INCOMING] " + message.data);
+            // split the message into tokens
             var msg = message.data.split(" ");
+            // isolate the command string
             var command = msg[0];
             msg.splice(0, 1);
             switch (command) {
+                // the server is providing alarm data to include
                 case "ALARM":
+                    // re-formate the json string and parse it
                     var json = msg.join(" ");
                     var data;
                     try {
@@ -27,10 +49,13 @@
                         return;
                     }
                     console.log("Data was", data);
+                    // for each alarm element, parse it into an Alarm object
                     for (var i = 0; i < data.length; i++) {
+                        // create the alarm in the list
                         var alarmElem = document.createElement("div");
                         alarmElem.classList.add("alarmListElement");
                         document.getElementById("alarmList").appendChild(alarmElem);
+                        // create and add an Alarm object for use by the alarm logic
                         window.g.alarms.push(new window.g.Alarm({
                             h: data[i].time.h >= 12 ? data[i].time.h - 12 : data[i].time.h,
                             m: data[i].time.m,
@@ -52,12 +77,18 @@
                         }, document.querySelector("#musicSelect select").value, alarmElem, window.g.alarms.length, data[i].id, data[i].label));
                     }
                     break;
+                // the server is providing configuration data
                 case "CONF":
+                    // re-format and parse the json string
                     var d = JSON.parse(msg.join(" "));
+
+                    // save settings
                     window.g.timezone = d.tz;
                     window.g.increaseTime = d.incr;
                     window.g.snoozeAmount = d.snooze;
                     window.g.displayMode = d.mode;
+
+                    // apply settings
                     if (!window.g.displayMode) {
                         window.g.changeSetting("displayMode", true);
                     }
@@ -66,15 +97,20 @@
                     document.getElementById("textInput_email").value = d.addr;
                     break;
                 case "ERROR":
+                    // The server is emitting an error
                     console.error("[WS] ERROR: " + msg.join(" "));
                     if (msg[0] === "603") {
+                        // show the user that the email was invalid
                         document.getElementById("textInput_email").style.background = "#5b1c1c";
                     }
                     break;
+                // the server is providing data to inject into the visualizer
                 case "VDATA":
+                    // re-formate and parse the json string
                     var d = JSON.parse(msg.join(" "));
                     console.log("Drawing charts...");
                     /* eslint-disable quote-props */
+                    // create the snooze chart
                     AmCharts.makeChart("visualizationChart1", {
                         "type": "serial",
                         "categoryField": "weekday",
@@ -163,6 +199,7 @@
                             }
                         ]
                     });
+                    // create the alarm chart
                     AmCharts.makeChart("visualizationChart2", {
                         "type": "serial",
                         "categoryField": "weekday",
@@ -257,13 +294,26 @@
                     console.error("Unknown command: " + command);
             }
         });
+
+        // fires when the connection to the server is lost
         window.g.sock.ws.addEventListener("close", function () {
             console.error("[WS] Connection closed");
             document.getElementById("site").style.background = "#5b1c1c";
         });
+
+        /**
+         * Function to determine if the socket is ready for messages
+         * @returns {bool} true if the socket is ready
+         */
         window.g.sock.isOpen = function () {
             return window.g.sock.init && window.g.sock.ws.readyState === window.g.sock.ws.OPEN;
         };
+
+        /**
+         * Function to send a message to the server via socket
+         * @param {string} msg - the message to send
+         * @returns {undefined}
+         */
         window.g.sock.send = function (msg) {
             console.log("[WS] [OUTGOING] " + msg);
             window.g.sock.ws.send(msg, function (e) {

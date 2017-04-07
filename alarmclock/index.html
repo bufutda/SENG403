@@ -3,19 +3,36 @@
     <head>
         <title>SENG 403 Alarm Clock</title>
         <meta charset="utf-8"/>
+
+        <!-- stylesheets -->
         <link type="text/css" href="/alarmclock/stylesheet.css" rel="stylesheet"/>
         <link type="text/css" href="https://fonts.googleapis.com/css?family=Rajdhani" rel="stylesheet" />
         <link type="text/css" href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet" />
+
+        <!-- library includes -->
         <script src="/alarmclock/resources/chrono.min.js"></script>
         <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
         <script src="https://www.amcharts.com/lib/3/serial.js"></script>
         <script src="https://www.amcharts.com/lib/3/themes/dark.js"></script>
-        <script type="text/javascript" src="/alarmclock/logic.js"></script>
+
+        <!-- logic includes -->
+        <script type="text/javascript" src="/alarmclock/vars.js"></script>
         <script type="text/javascript" src="/alarmclock/alarm.js"></script>
+        <script type="text/javascript" src="/alarmclock/alarmutils.js"></script>
+        <script type="text/javascript" src="/alarmclock/clock.js"></script>
+        <script type="text/javascript" src="/alarmclock/settings.js"></script>
         <script type="text/javascript" src="/alarmclock/timeConstants.js"></script>
+        <script type="text/javascript" src="/alarmclock/utils.js"></script>
         <script type="text/javascript" src="/alarmclock/sock.js"></script>
+
+        <!-- initialization script -->
         <script type="text/javascript">
+            /**
+             * Function to run when the page is ready
+             * @returns {undefined}
+             */
             function init () {
+                // extract and parse the querystring into a global object
                 var pr = window.location.search.substr(1).split("&");
                 window.g.query = {};
                 for (var i = 0; i < pr.length; i++) {
@@ -24,46 +41,65 @@
                     }
                 }
 
+                // initialize the settings
                 var elems = document.getElementsByClassName("settingSwitchToggle");
                 for (var i = 0; i < elems.length; i++) {
                     elems[i].innerText = elems[i].getAttribute("activetext");
                 }
 
+                // apply the displaymode
                 if (window.g.query.hasOwnProperty("displayMode") && (window.g.query.displayMode === "true" || window.g.query.displayMode === "false")) {
                     window.g.displayMode = window.g.query.displayMode === "true" ? true : false;
                 } else {
                     window.g.displayMode = true;
                 }
 
+                // apply listener to the enter key of the smart input
                 document.getElementById("textInput_time").addEventListener("keydown", function (e) {
                     if (e.keyCode === 13) {
                         window.g.processTimeText();
                     }
                 });
 
+                // start the alarm timepiece and start the socket
                 window.g.cronTimer.start();
                 window.g.sock.init();
             }
         </script>
     </head>
     <body onload="javascript:init();">
+        <!-- root site wrapper -->
         <div id="site">
+            <!-- visualization charts -->
             <div id="visualizationCanvas"><div id="visualizationChart1"></div><div id="visualizationChart2"></div></div>
+
+            <!-- alarm popup -->
             <div id="alarmShadow"></div>
             <div id="alarmBox" class="center"></div>
+
+            <!-- left half of the window, contains all active alarms -->
             <div id="alarmSide">
+
+                <!-- header for buttons -->
                 <div id="alarmHeader"><div id="createButton" class="centerY" onclick="javascript:window.g.confirmCreateAlarm();">&oplus; Confirm</div><div id="newAlarm" class="centerY" onclick="javascript:window.g.createAlarm();">Create Alarm &oplus;</div></div>
+
+                <!-- list of alarms -->
                 <div id="alarmList"></div>
+
+                <!-- wrapper for creating or editing an alarm -->
                 <div id="dialogWrapper">
                     <div id="createAlarmDialog" class="dialog">
                         <div>
+                            <!-- top half -->
                             <div class="createAlarmDialogW center">
+                                <!-- smart input -->
                                 <input id="textInput_time" class="textInput centerX" type="text" placeholder="Enter a Time (Eg. noon, 3:15)"/>
                                 <div class="interruptedHR" id="createHR1">
                                     <div class="interruptedHRdiv"><hr></div>
                                     <div>OR</div>
                                     <div class="interruptedHRdiv"><hr></div>
                                 </div>
+                                <!-- choose hour -->
                                 <div id="timeSelectW" class="centerX">
                                     <div id="timeSelect_hour" class="nice-select">
                                         <select>
@@ -84,6 +120,7 @@
                                     </div>
                                     <div class="timeSelectColonW"><span class="centerY">:
                                     </span></div>
+                                    <!-- choose minute -->
                                     <div id="timeSelect_minute" class="nice-select">
                                         <select>
                                             <option value="0">00</option>
@@ -150,6 +187,7 @@
                                     </div>
                                     <div class="timeSelectColonW"><span class="centerY">:
                                     </span></div>
+                                    <!-- select second -->
                                     <div id="timeSelect_second" class="nice-select">
                                         <select>
                                             <option value="0">00</option>
@@ -214,6 +252,7 @@
                                             <option value="59">59</option>
                                         </select>
                                     </div>
+                                    <!-- select am/pm -->
                                     <div id="timeSelect_modifier" class="nice-select">
                                         <select>
                                             <option value="am">AM</option>
@@ -224,12 +263,15 @@
                             </div>
                         </div>
                         <div>
+                            <!-- lower half -->
                             <div class="createAlarmDialogW center">
                                 <div class="center">
                                     <div>
+                                        <!-- label -->
                                         <div id="labelW">
                                             <input id="textInput_label" class="textInput centerX" type="text" placeholder="Enter a Label (Eg. take medicine)"/>
                                         </div>
+                                        <!-- alarm sound -->
                                         <div id="audioW">
                                             <div id="audioTextW"><span class="centerY">Audio:
                                             </span></div>
@@ -241,9 +283,11 @@
                                             </div>
                                         </div>
                                         <br>
+                                        <!-- all alarm repeat options -->
                                         <div id="repeatW">
                                             <label for="checkInput_repeat"></label>
                                             <label class="checkboxInput">
+                                                <!-- enable repeat -->
                                                 <input id="checkInput_repeat" type="checkbox" name="checkInput_repeat" onclick="javascript:window.g.repeatCheck();"/>
                                                 <span></span>
                                             </label>
@@ -253,6 +297,7 @@
                                     <hr>
                                     <div id="repeatShadowSelectW">
                                         <div id="repeatShadow" class="overshadow"></div>
+                                        <!-- repeat day checkboxes -->
                                         <div id="repeatSelectW">
                                             <label for="checkInput_sunday"></label>
                                             <label class="checkboxInput">
@@ -310,14 +355,23 @@
                     </div>
                 </div>
             </div>
+            <!-- right side of the window -->
             <div id="clockSide">
+                <!-- settings button -->
                 <div id="settingsButton" onclick="javascript:window.g.settingsClick();"></div>
+
+                <!-- visualization button -->
                 <div id="visualizeButton" onclick="javascript:window.g.visualize();"></div>
+
+                <!-- settings menu -->
                 <div id="settings">
+                    <!-- analog/digital display -->
                     <div class="settingSwitchW">
                         <span>Display Mode:</span><div class="settingSwitchToggle settingSwitchToggleActive" id="setting_displayMode" activetext="DIGITAL" inactivetext="ANALOG" onclick="javascript:window.g.changeSetting('displayMode');"></div>
                     </div>
                     <hr>
+
+                    <!-- snooze time -->
                     <div class="settingSwitchW" id="snoozeSettingW">
                         <span class="centerY">Snooze Time:</span>
                         <div class="nice-select">
@@ -329,6 +383,8 @@
                         </div>
                     </div>
                     <hr>
+
+                    <!-- timezone -->
                     <div class="settingSwitchW" id="timezoneSettingW">
                         <span class="centerY">Timezone:</span>
                         <div class="nice-select">
@@ -376,14 +432,20 @@
                         </div>
                     </div>
                     <hr>
+
+                    <!-- email -->
                     <div class="settingSwitchW" id="emailSettingW">
                         <input id="textInput_email" class="textInput centerX" type="email" placeholder="Backup Email" onchange="javascript:window.g.sock.send('MAIL ' + document.getElementById('textInput_email').value); document.getElementById('textInput_email').style.background = '';">
                     </div>
                 </div>
+
+                <!-- digital clock -->
                 <div id="digitalClockWrapper" class="center">
                     <div id="digitalClockModifier" class="centerX">AM</div>
                     <div id="digitalClock">00:00:00</div>
                 </div>
+
+                <!-- analog clock -->
                 <div id="analogClock" class="center">
                     <div id="analogClockModifier" class="center">AM</div>
                     <div id="analogClock_hourHand" class="clockHand"></div>
