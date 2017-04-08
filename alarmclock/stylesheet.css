@@ -1,9 +1,31 @@
+/* hide scrollbars in webkit browsers */
 ::-webkit-scrollbar {
     display: none;
 }
+
+/* disable focus highlighting (blue outline) */
 :focus {
     outline: none !important;
 }
+
+/* util classes */
+.centerX {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.centerY {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* root site positioning */
 #site {
     position: absolute;
     top: 0; left: 0; bottom: 0; right: 0;
@@ -36,6 +58,8 @@
     min-width: 200px;
     z-index: 0;
 }
+
+/* buttons */
 #settingsButton {
     background-image: url("/alarmclock/assets/gear.png");
     position: absolute;
@@ -61,6 +85,8 @@
     transition: 1s;
     filter: invert(50%) !important;
 }
+
+/* settings menu */
 #settings {
     display: none;
     z-index: 2;
@@ -100,6 +126,8 @@
 .settingSwitchToggle:hover {
     cursor: pointer !important;
 }
+
+/* digital clock */
 #digitalClockWrapper {
     display: none;
     color: #606060;
@@ -115,6 +143,8 @@
     z-index: 2;
     font-size: 35px;
 }
+
+/* analog clock */
 #analogClockModifier {
     z-index: 3;
     font-size: 17px;
@@ -149,21 +179,8 @@
     position: absolute;
     transition: 0.5s;
 }
-.centerX {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-}
-.centerY {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-}
-.center {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-}
+
+/* alarm list */
 #alarmHeader {
     position: absolute;
     top: 0; left: 0; right: 0;
@@ -205,6 +222,8 @@
     overflow-y: scroll;
     overflow-x: hidden;
 }
+
+/* create alarm dialog */
 .dialog {
     display: none;
     z-index: 4;
@@ -234,7 +253,6 @@ hr {
     border-color: #1a1a1a;
     border-style: solid;
     width: 95%;
-
 }
 .interruptedHR div {
     display: inline-block;
@@ -278,7 +296,7 @@ hr {
     margin-top: 50px;
 }
 .nice-select {
-   background: url(/alarmclock/assets/dropdown.png) no-repeat 96% 0;
+   background: url("/alarmclock/assets/dropdown.png") no-repeat 96% 0;
    background-color: #606060;
    border: 2px solid #1a1a1a;
    height: 29px;
@@ -287,7 +305,6 @@ hr {
    display: inline-block;
    margin: 2px;
 }
-
 .nice-select select {
    background: transparent;
    border: none;
@@ -297,7 +314,6 @@ hr {
    width: 268px;
    color: #1a1a1a;
 }
-
 #timeSelectW {
     font-variant: super;
     width: 374px;
@@ -370,6 +386,8 @@ hr {
 #repeatW {
     text-align: center;
 }
+
+/* elements in the alarm list */
 .alarmListElement {
     height: 100px;
     border-bottom: 2px solid #606060;
@@ -424,6 +442,10 @@ hr {
 .alarmListElementEdit:hover {
     filter: invert(0);
 }
+.alarmListElementLabel {
+    position: absolute;
+    top: 10px;
+}
 #alarmShadow {
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -433,6 +455,8 @@ hr {
     z-index: 200;
     display: none;
 }
+
+/* ring notification */
 #alarmBox {
     z-index: 201;
     width: 400px;
@@ -473,6 +497,8 @@ hr {
 .alarmBoxMsg {
     left: 10px;
 }
+
+/* custom setting overrides */
 #snoozeSettingW .nice-select {
     width: 140px;
     margin-left: 113px;
@@ -484,6 +510,8 @@ hr {
 #emailSettingW {
     height: 38px;
 }
+
+/* data visualization */
 #visualizationCanvas {
     z-index: 10;
     display: none;
@@ -510,8 +538,4 @@ hr {
     right: 0;
     top: 0;
     bottom: 0;
-}
-.alarmListElementLabel {
-    position: absolute;
-    top: 10px;
 }
