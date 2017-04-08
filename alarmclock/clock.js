@@ -1,130 +1,40 @@
 (function () {
     "use strict";
+
+    // if this is the first file to define window.g, do so
     if (!window.hasOwnProperty("g")) {
         window.g = {};
     }
 
-    window.g.cronTimer = {
-        tmr: NaN,
-        secondLatch: false,
-        minuteLatch: -1,
-        listeners: {},
-        start: function () {
-            if (isNaN(window.g.cronTimer.tmr)) {
-                window.g.cronTimer.tmr = setInterval(window.g.cronTimer.secondHandler, 100);
-            } else {
-                console.warn("CRON already started.");
-            }
-        },
-        stop: function () {
-            if (isNaN(window.g.cronTimer.tmr)) {
-                console.warn("CRON already stopped.");
-            } else {
-                clearInterval(window.g.cronTimer.tmr);
-                window.g.cronTimer.tmr = NaN;
-            }
-        },
-        secondHandler: function () {
-            var time = window.g.cronTimer.getTime();
-            var clockTime = {
-                s: time.getUTCSeconds(),
-                m: time.getUTCMinutes(),
-                h: window.g.c24212(time.getUTCHours()).h,
-                t: time.getUTCHours(),
-                n: window.g.c24212(time.getUTCHours()).n,
-                d: time.getUTCDay()
-            };
-            window.g.cronTimer.emit("tick", clockTime);
-            window.g.updateBigClock(clockTime);
-            if (time.getUTCSeconds() < 30 && !window.g.cronTimer.secondLatch) {
-                window.g.cronTimer.emit("half");
-                window.g.cronTimer.emit("minute", clockTime);
-                window.g.cronTimer.secondLatch = true;
-            }
-            if (time.getUTCSeconds() >= 30 && window.g.cronTimer.secondLatch) {
-                window.g.cronTimer.emit("half");
-                window.g.cronTimer.secondLatch = false;
-            }
-            if (time.getUTCMinutes() !== window.g.cronTimer.minuteLatch) {
-                window.g.cronTimer.minuteLatch = time.getUTCMinutes();
-                if (window.g.cronTimer.minuteLatch % 10 === 0) {
-                    window.g.cronTimer.emit("ten", clockTime);
-                }
-                if (window.g.cronTimer.minuteLatch % 30 === 0) {
-                    window.g.cronTimer.emit("thirty", clockTime);
-                }
-                if (window.g.cronTimer.minuteLatch === 0) {
-                    window.g.cronTimer.emit("hour", clockTime);
-                }
-            }
-        },
-        on: function (event, handler) {
-            console.info("New listener on " + event, window.g.cronTimer.listeners.hasOwnProperty(event) ? window.g.cronTimer.listeners[event].length : 0);
-            if (!window.g.cronTimer.listeners.hasOwnProperty(event)) {
-                window.g.cronTimer.listeners[event] = [];
-            }
-            window.g.cronTimer.listeners[event].push(handler);
-            var time = window.g.cronTimer.getTime();
-            window.g.cronTimer.emit(event, {
-                s: time.getUTCSeconds(),
-                m: time.getUTCMinutes(),
-                h: time.getUTCHours() % 12,
-                t: time.getUTCHours(),
-                n: time.getUTCHours() > 12,
-                d: time.getUTCDay()
-            });
-        },
-        off: function (event, handler) {
-            console.info("Removed listener on " + event);
-            if (window.g.cronTimer.listeners.hasOwnProperty(event)) {
-                var i = window.g.cronTimer.listeners[event].indexOf(handler);
-                if (i > -1) {
-                    window.g.cronTimer.listeners[event].splice(i, 1);
-                } else {
-                    console.warn("Cannot remove listener. Handler is not registered.", handler);
-                }
-            } else {
-                console.warn("Cannot remove listener for non-existant event:", event);
-            }
-        },
-        emit: function (event, arg) {
-            if (event !== "tick") {
-                console.info("[E] " + event);
-            }
-            if (!(arg instanceof Array)) {
-                arg = [arg];
-            }
-            if (window.g.cronTimer.listeners.hasOwnProperty(event)) {
-                for (var i = 0; i < window.g.cronTimer.listeners[event].length; i++) {
-                    window.g.cronTimer.listeners[event][i].apply(window, arg);
-                }
-            } else {
-                // console.warn("No listeners on emitted event:", event);
-            }
-        },
-        getTime: function () {
-            return new Date((Date.now() + (window.g.timezone * 60 * 1000)) + window.g.increaseTime);
-        }
-    };
-
+    /**
+     * Update the clock to represent the passed time
+     * @param {clockTimeObject} clockTime - an object containing time data
+     * @returns {undefined}
+     */
     window.g.updateBigClock = function (clockTime) {
+        // if the displaymode is digital
         if (window.g.displayMode) {
+            // if the displayMode has changed since the last update, change the display
             if (window.g.displayMode !== window.g.displayLatch) {
                 document.getElementById("analogClock").style.display = "none";
                 document.getElementById("digitalClockWrapper").style.display = "block";
                 window.g.displayLatch = window.g.displayMode;
             }
             var clock = document.getElementById("digitalClock");
+
+            // update the clock text
             clock.innerText = (clockTime.h < 10 ? "0" : "") + clockTime.h + ":" +
                 (clockTime.m < 10 ? "0" : "") + clockTime.m + ":" +
                 (clockTime.s < 10 ? "0" : "") + clockTime.s;
             document.getElementById("digitalClockModifier").innerText = (clockTime.n ? "P" : "A") + "M";
         } else {
+            // if the displayMode has changed since last update, change the display
             if (window.g.displayMode !== window.g.displayLatch) {
                 document.getElementById("digitalClockWrapper").style.display = "none";
                 document.getElementById("analogClock").style.display = "block";
                 window.g.displayLatch = window.g.displayMode;
             }
+            // rotate the hands to the appropriate positions
             window.g.rotateHand(document.getElementById("analogClock_hourHand").style, window.g.timeToDeg12(clockTime.h), "hourReachAroundLatch");
             window.g.rotateHand(document.getElementById("analogClock_minuteHand").style, window.g.timeToDeg60(clockTime.m), "minuteReachAroundLatch");
             window.g.rotateHand(document.getElementById("analogClock_secondHand").style, window.g.timeToDeg60(clockTime.s), "secondReachAroundLatch");
@@ -132,6 +42,12 @@
         }
     };
 
+    /**
+     * Convert a mod60 time to degrees
+     * @param {int} numTime - the time to convert
+     * @returns {Number} the degrees clockwise from 12 that, if the passed time were to be represented on a clock
+     *                   hand, the hand would be at.
+     */
     window.g.timeToDeg60 = function (numTime) {
         if (numTime > 60) {
             console.warn("[60] Invalid time", numTime);
@@ -140,6 +56,12 @@
         return numTime * (360.0 / 60.0);
     };
 
+    /**
+     * Convert a mod12 time to degrees
+     * @param {int} numTime - the time to convert
+     * @returns {Number} the degrees clockwise from 12 that, if the passed time were to be represented on a clock
+     *                   hand, the hand would be at.
+     */
     window.g.timeToDeg12 = function (numTime) {
         if (numTime > 12) {
             console.warn("[12] Invalid time", numTime);
@@ -148,13 +70,29 @@
         return numTime * (360.0 / 12.0);
     };
 
+    /**
+     * Rotate a hand element on the analog clock
+     * @param {DOMElement} hand - the hand element to rotate
+     * @param {Number} deg - the degrees clockwise from 12 to rotate the hand to
+     * @param {bool} latch - true if this rotate would cause a wraparound graphical defect
+     * @returns {undefined}
+     */
     window.g.rotateHand = function (hand, deg, latch) {
+        // if we are rotating to 12, check whether the wraparound graphical defect has been handled
         if (deg === 0) {
             if (!window.g[latch]) {
+                // it has not been handled, so handle it
                 window.g[latch] = true;
+
+                // disable animations
                 hand.transition = "0s";
+
+                // in 50ms, rotate the hand to the inverse of it's current position (counter-clockwise)
                 setTimeout(function () {
                     hand.transform = "rotate(-6deg)";
+
+                    // in 50 more ms, re-enable the animation, and rotate it (clockwise this time) to it's
+                    // requested position
                     setTimeout(function () {
                         hand.transition = "0.5s";
                         hand.transform = "rotate(0)";
@@ -162,6 +100,7 @@
                 }, 50);
             }
         } else {
+            // clear the latch if it's true and rotate the hand
             if (window.g[latch]) {
                 window.g[latch] = false;
             }
