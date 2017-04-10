@@ -30,7 +30,7 @@ var activeAlarms = {};
 var ccount = 1;
 
 // timezone of the server
-var timezoneOffset = -420;
+var timezoneOffset = -360;
 
 // time fudge factor
 var increaseTime = 0;

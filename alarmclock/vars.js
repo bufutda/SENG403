@@ -44,7 +44,7 @@
     window.g.increaseTime = 0;
 
     // timezone offset in mins from UTC
-    window.g.timezone = -1 * (new Date().getTimezoneOffset());
+    window.g.timezone = -360; // -1 * (new Date().getTimezoneOffset());
 
     // alarm is currently being edited
     window.g.editing = false;

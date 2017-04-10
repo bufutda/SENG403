@@ -286,6 +286,7 @@
         document.querySelector("#timeSelect_modifier select").value = "am";
         document.querySelector("#musicSelect select").value = "/alarmclock/tones/boobalee.ogg";
         document.getElementById("textInput_time").value = "";
+        document.getElementById("textInput_label").value = "";
     };
 
     /**
